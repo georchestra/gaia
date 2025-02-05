@@ -55,12 +55,14 @@ def get_rescontent_from_resid(restype, resid):
 @dash_bp.route("/")
 def home():
     gsurl = '/' + app.extensions["conf"].get('localgs', 'urls') + '/ows'
+    app.logger.debug(("eeeoo"+ gsurl))
     return render_template('home.html', reqhead=request.headers, bootstrap=app.extensions["bootstrap"], gsurl=gsurl)
 
 @dash_bp.route("/csw/<string:portal>")
 def csw(portal):
     # XXX for now only support the local GN
     localgn = app.extensions["conf"].get('localgn', 'urls')
+    app.logger.info("eeeoo" + localgn)
     cswurl = '/' + localgn + '/' + portal + '/fre/csw'
     service = app.extensions["owscache"].get('csw', cswurl)
     if service.s is None:

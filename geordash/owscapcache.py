@@ -23,6 +23,7 @@ import traceback
 import requests
 
 from geordash.logwrap import get_logger
+from os import getenv
 
 is_dataset = PropertyIsEqualTo("Type", "dataset")
 non_harvested = PropertyIsEqualTo("isHarvested", "false")
@@ -70,13 +71,18 @@ class OwsCapCache:
         self.services = dict()
         self.cache_lifetime = 12 * 60 * 60
         try:
-            from config import url
+            if getenv('REDISURL'):
+                # running owscapcache from a python cli for tests
+                url = getenv('REDISURL')
+                print(f"using env url : {url}")
+            else:
+                from config import url
+                print(f"using config.py url : {url}")
+            self.rediscli = Redis.from_url(url)
+            self.conf = conf
+
         except:
-            # running owscapcache from a python cli for tests
-            from os import getenv
-            url=getenv('REDISURL')
-        self.rediscli = Redis.from_url(url)
-        self.conf = conf
+            get_logger("OwsCapCache").error(f"wrong can't set redis url {url}")
 
     def fetch(self, service_type, url, force_fetch=False):
         if service_type not in ("wms", "wmts", "wfs", "csw"):

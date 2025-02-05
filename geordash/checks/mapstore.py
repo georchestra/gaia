@@ -1,7 +1,7 @@
 #!/bin/env python3
 # -*- coding: utf-8 -*-
 # vim: ts=4 sw=4 et
-
+from celery.utils.nodenames import host_format
 from sqlalchemy import create_engine, MetaData, inspect, select, or_, and_
 from sqlalchemy.engine import URL
 from sqlalchemy.ext.automap import automap_base
@@ -10,6 +10,7 @@ from sqlalchemy.orm import sessionmaker
 import json
 import requests
 from os import getenv
+import re
 
 from owslib.wms import WebMapService
 from owslib.wfs import WebFeatureService
@@ -21,6 +22,8 @@ from celery import shared_task
 from celery import Task
 from celery import group
 from celery.utils.log import get_task_logger
+from sqlalchemy.testing.suite.test_reflection import users
+
 from geordash.logwrap import get_logger
 from geordash.utils import objtype
 
@@ -40,13 +43,54 @@ def name_for_collection_relationship(base, local_cls, referred_cls, constraint):
 
 class MapstoreChecker():
     def __init__(self, conf):
+
+        search_env = re.match('^\${(.*)}$', conf.get('pgsqlUser'))
+        if search_env:
+            user = getenv(search_env.group(1))
+            print("get user from env")
+        else:
+            user = conf.get('pgsqlUser')
+            print("get user from default.properties")
+
+        search_env = re.match('^\${(.*)}$', conf.get('pgsqlHost'))
+        if search_env:
+            host = getenv(search_env.group(1))
+            print("get host from env")
+        else:
+            host = conf.get('pgsqlHost')
+            print("get host from default.properties")
+
+        search_env = re.match('^\${(.*)}$', conf.get('pgsqlPort'))
+        if search_env:
+            port = getenv(search_env.group(1))
+            print("get port from env")
+        else:
+            port = conf.get('pgsqlPort')
+            print("get port from default.properties")
+
+        search_env = re.match('^\${(.*)}$', conf.get('pgsqlPassword'))
+        if search_env:
+            passwd = getenv(search_env.group(1))
+            print("get password from env")
+        else:
+            passwd = conf.get('pgsqlPassword')
+            print("get password from default.properties")
+
+        search_env = re.match('^\${(.*)}$', conf.get('pgsqlDatabase'))
+        if search_env:
+            database = getenv(search_env.group(1))
+            print("get database from env")
+        else:
+            database = conf.get('pgsqlDatabase')
+            print("get database from default.properties")
+
         url = URL.create(
             drivername="postgresql",
-            username=conf.get('pgsqlUser'),
-            host=conf.get('pgsqlHost'),
-            port=conf.get('pgsqlPort'),
-            password=conf.get('pgsqlPassword'),
-            database=conf.get('pgsqlDatabase')
+            username=user,
+            host=host,
+            port=port,
+            password=passwd,
+            database=database
         )
 
         engine = create_engine(url)#, echo=True, echo_pool="debug")

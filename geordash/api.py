@@ -19,6 +19,7 @@ def mapstore_get(request, url, accept_json = True):
     if 'sec-roles' in request.headers:
         headers['sec-roles'] = request.headers.get('Sec-Roles')
     msurl = app.extensions["conf"].get('mapstore', 'secproxytargets')
+    print("cooooooooooooucocuocucou" + msurl)
     return requests.get(msurl + url, headers = headers)
 
 @api_bp.route("/mapstore/maps.json")

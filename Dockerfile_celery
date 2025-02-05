@@ -1,0 +1,36 @@
+# Dockerfile
+FROM python:3.10
+
+ARG CELERY_APP=make_celery
+ARG CELERY_OPTS="-P solo -B -E -s workdir/celerybeat-schedule"
+ARG CELERY_LOGLEVEL=INFO
+ARG FLASK_APP=geordash
+ARG FLASK_OPTS="-h 0.0.0.0 -p 5002"
+ARG georchestradatadir=/etc/georchestra/
+
+# set fixed UID and GID - see github.com/hexops/dockerfile
+ARG UID=10000
+ARG GID=10001
+
+RUN addgroup --gid ${GID} gaia
+RUN adduser --uid ${UID} --disabled-password --home /app --shell /bin/sh --ingroup gaia celery
+
+
+
+RUN apt update && \
+    apt install -y python3-flask-bootstrap python3-flask python3-celery python3-sqlalchemy \
+    python3-psycopg2 python3-owslib python3-jsonpickle python3-redis gunicorn && \
+    apt clean
+
+COPY ./requirements.txt /
+
+RUN pip install -r requirements.txt
+
+RUN mkdir /geordash
+WORKDIR /geordash
+COPY ./geordash /geordash
+
+
+USER celery
+
+CMD ["celery", "-A $CELERY_APP worker --loglevel $CELERY_LOGLEVEL $CELERY_OPTS -s celerybeat-schedule"]

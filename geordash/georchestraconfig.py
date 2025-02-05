@@ -6,6 +6,7 @@ from configparser import ConfigParser
 from itertools import chain
 from os import getenv
 import json
+import re
 
 class GeorchestraConfig:
     def __init__(self):
@@ -35,16 +36,27 @@ class GeorchestraConfig:
                 self.sections['urls']['localgn'] = localentry['url'].split('/')[1]
             except:
                 # safe default value
-                self.sections['urls']['localgn'] = 'geonetwork'
+                self.sections['urls'][''] = 'geonetwork'
             try:
                 localentry = localconfig["initialState"]["defaultState"]["catalog"]["default"]["services"]["localgs"]
                 self.sections['urls']['localgs'] = localentry['url'].split('/')[1]
             except:
                 # safe default value
                 self.sections['urls']['localgs'] = 'geoserver'
+        print(self.sections)
 
     def get(self, key, section='default'):
+        print("iiiiiciiii")
         if section in self.sections:
-            return self.sections[section].get(key, None)
+            search_env = re.match('^\${(.*)}$', self.sections[section].get(key, None))
+            if search_env:
+                if getenv(search_env.group(1)):
+                    print("URL is " + getenv(search_env.group(1)))
+                    return getenv(search_env.group(1))
+                else:
+                    return None
+            else:
+                print("URL issss " + self.sections[section].get(key, None) )
+                return self.sections[section].get(key, None)
         else:
             return None
