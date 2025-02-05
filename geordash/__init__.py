@@ -33,7 +33,15 @@ def create_app() -> Flask:
     @app.context_processor
     def inject_globals():
         instancename = app.extensions["conf"].get('instancename')
-        return { 'instancename': instancename }
+        return { 'instancename': instancename,
+                'headerScript': app.extensions["conf"].get('headerScript'),
+                'headerHeight': app.extensions["conf"].get('headerHeight'),
+                'headerUrl': app.extensions["conf"].get('headerUrl'),
+                'headerConfigFile': app.extensions["conf"].get('headerConfigFile'),
+                'useLegacyHeader': app.extensions["conf"].get('useLegacyHeader'),
+                'georchestraStyleSheet': app.extensions["conf"].get('georchestraStyleSheet'),
+                'logoUrl': app.extensions["conf"].get('logoUrl')
+            }
 
     app.jinja_env.filters['datetimeformat'] = format_datetime
     # cant work since its at /bootstrap and cant be below /gaia ?

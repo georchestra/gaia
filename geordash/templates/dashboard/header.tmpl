@@ -19,7 +19,7 @@
     <body>
 {% block scripts %}
 {% if not request.args.get('noheader') %}
-    <script src='https://cdn.jsdelivr.net/gh/georchestra/header@dist/header.js'></script>
+    <script src='{{ headerScript | default('https://cdn.jsdelivr.net/gh/georchestra/header@dist/header.js', true) }}'></script>
 {% endif %}
     {{ bootstrap.load_js() }}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -30,7 +30,14 @@
 {% block content %}
 {% if not request.args.get('noheader') %}
 <div id="go_head">
-  <geor-header active-app='gaia' legacy-header='true' legacy-url='/header/' style='height:60px'></geor-header>
+  <geor-header active-app='gaia'
+      config-file='{{ headerConfigFile | default('', true) }}'
+      stylesheet='{{ georchestraStyleSheet | default ('', true) }}'
+      height='{{ headerHeight | default(80, true) }}'
+      logo-url='{{ logoUrl | default('', true) }}'
+      legacy-header='{{ useLegacyHeader |default('true', true) }}'
+      legacy-url='{{ headerUrl | default('/header/', true) }}'>
+  </geor-header>
 </div>
 {% endif %}
 {% endblock content %}
