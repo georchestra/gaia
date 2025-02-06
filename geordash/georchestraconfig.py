@@ -45,18 +45,23 @@ class GeorchestraConfig:
                 self.sections['urls']['localgs'] = 'geoserver'
         print(self.sections)
 
-    def get(self, key, section='default'):
+    def get(self, key, section='default', lo=None):
         print("iiiiiciiii")
-        if section in self.sections:
-            search_env = re.match('^\${(.*)}$', self.sections[section].get(key, None))
+
+        value = self.sections[section].get(key, None)
+        if lo is not None :
+            lo.info(" value is " + value)
+        if value:
+            search_env = re.match('^\${(.*)}$', value)
+            search_env2 = re.match('(.*)\${(.*)}(.*)', value)
             if search_env:
                 if getenv(search_env.group(1)):
                     print("URL is " + getenv(search_env.group(1)))
-                    return getenv(search_env.group(1))
-                else:
-                    return None
-            else:
-                print("URL issss " + self.sections[section].get(key, None) )
-                return self.sections[section].get(key, None)
-        else:
-            return None
+                    value = getenv(search_env.group(1))
+            elif search_env2:
+                if getenv(search_env2.group(2)):
+                    print("URL is " + search_env2.group(1) + getenv(search_env2.group(2)) +search_env2.group(3) )
+                    value = search_env2.group(1) + getenv(search_env2.group(2)) +search_env2.group(3)
+        if lo is not None:
+            lo.info(" value is 2 " + value)
+        return value

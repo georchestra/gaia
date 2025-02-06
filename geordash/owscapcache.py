@@ -164,6 +164,7 @@ class OwsCapCache:
 
     def get(self, service_type, url, force_fetch=False):
         # is a relative url, prepend https://domainName
+
         if not url.startswith("http"):
             url = "https://" + self.conf.get("domainName") + url
         if service_type not in self.services:

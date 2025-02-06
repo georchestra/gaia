@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # vim: ts=4 sw=4 et
 from celery.utils.nodenames import host_format
+from kombu.transport.virtual.base import logger
 from sqlalchemy import create_engine, MetaData, inspect, select, or_, and_
 from sqlalchemy.engine import URL
 from sqlalchemy.ext.automap import automap_base
@@ -44,45 +45,15 @@ def name_for_collection_relationship(base, local_cls, referred_cls, constraint):
 class MapstoreChecker():
     def __init__(self, conf):
 
-        search_env = re.match('^\${(.*)}$', conf.get('pgsqlUser'))
-        if search_env:
-            user = getenv(search_env.group(1))
-            print("get user from env")
-        else:
-            user = conf.get('pgsqlUser')
-            print("get user from default.properties")
+        user = conf.get('pgsqlUser')
 
-        search_env = re.match('^\${(.*)}$', conf.get('pgsqlHost'))
-        if search_env:
-            host = getenv(search_env.group(1))
-            print("get host from env")
-        else:
-            host = conf.get('pgsqlHost')
-            print("get host from default.properties")
+        host = conf.get('pgsqlHost')
 
-        search_env = re.match('^\${(.*)}$', conf.get('pgsqlPort'))
-        if search_env:
-            port = getenv(search_env.group(1))
-            print("get port from env")
-        else:
-            port = conf.get('pgsqlPort')
-            print("get port from default.properties")
+        port = conf.get('pgsqlPort')
 
-        search_env = re.match('^\${(.*)}$', conf.get('pgsqlPassword'))
-        if search_env:
-            passwd = getenv(search_env.group(1))
-            print("get password from env")
-        else:
-            passwd = conf.get('pgsqlPassword')
-            print("get password from default.properties")
+        passwd = conf.get('pgsqlPassword')
 
-        search_env = re.match('^\${(.*)}$', conf.get('pgsqlDatabase'))
-        if search_env:
-            database = getenv(search_env.group(1))
-            print("get database from env")
-        else:
-            database = conf.get('pgsqlDatabase')
-            print("get database from default.properties")
+        database = conf.get('pgsqlDatabase')
 
         url = URL.create(
             drivername="postgresql",
