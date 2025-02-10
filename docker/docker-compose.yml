@@ -13,8 +13,8 @@ services:
       - REDIS_REPLICATION_MODE=master
   gaia-back:
     build:
-      context: ./
-      dockerfile: Dockerfile_flask
+      context: ../
+      dockerfile: ./docker/Dockerfile_flask
     volumes:
       - ../datadir:/etc/georchestra
       - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
@@ -60,8 +60,8 @@ services:
 
   gaia-celery:
     build:
-      context: ./
-      dockerfile: Dockerfile_celery
+      context: ../
+      dockerfile: ./docker/Dockerfile_celery
     volumes:
       - ../datadir:/etc/georchestra
       - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
