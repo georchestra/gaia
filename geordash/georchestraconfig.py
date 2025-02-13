@@ -46,22 +46,18 @@ class GeorchestraConfig:
         print(self.sections)
 
     def get(self, key, section='default', lo=None):
-        print("iiiiiciiii")
-
         value = self.sections[section].get(key, None)
         if lo is not None :
-            lo.info(" value is " + value)
+            lo.info(" Before transformation url is : " + value)
         if value:
             search_env = re.match('^\${(.*)}$', value)
             search_env2 = re.match('(.*)\${(.*)}(.*)', value)
             if search_env:
                 if getenv(search_env.group(1)):
-                    print("URL is " + getenv(search_env.group(1)))
                     value = getenv(search_env.group(1))
             elif search_env2:
                 if getenv(search_env2.group(2)):
-                    print("URL is " + search_env2.group(1) + getenv(search_env2.group(2)) +search_env2.group(3) )
-                    value = search_env2.group(1) + getenv(search_env2.group(2)) +search_env2.group(3)
+                   value = search_env2.group(1) + getenv(search_env2.group(2)) +search_env2.group(3)
         if lo is not None:
-            lo.info(" value is 2 " + value)
+            lo.info("  After transformation url is : " + value)
         return value

@@ -19,7 +19,6 @@ def mapstore_get(request, url, accept_json = True):
     if 'sec-roles' in request.headers:
         headers['sec-roles'] = request.headers.get('Sec-Roles')
     msurl = app.extensions["conf"].get('mapstore', 'secproxytargets')
-    print("cooooooooooooucocuocucou" + msurl)
     return requests.get(msurl + url, headers = headers)
 
 @api_bp.route("/mapstore/maps.json")
@@ -104,7 +103,6 @@ def geonetwork_preauth(gnurl):
 @api_bp.route("/geonetwork/subportals.json")
 def geonetwork_subportals():
     gnurl = app.extensions["conf"].get(app.extensions["conf"].get('localgn', 'urls'), 'secproxytargets')
-    app.logger.info("eurf " + gnurl)
     r = geonetwork_preauth(gnurl)
     if type(r) != tuple:
         return r
@@ -126,10 +124,8 @@ def metadatas():
     if username == 'anonymous':
         return abort(403)
     def_es_querysize = 60
-    url1 = app.extensions["conf"].get('localgn', 'urls', lo=app.logger)
-    app.logger.info(" tototutu" + url1)
+    url1 = app.extensions["conf"].get('localgn', 'urls')
     gnurl = app.extensions["conf"].get(url1, 'secproxytargets')
-    app.logger.info("jjjjj" + gnurl)
     preauth = requests.get(gnurl + "srv/api/me", headers={'Accept': 'application/json'})
     if preauth.status_code == 204:
       if 'XSRF-TOKEN' in preauth.cookies:

@@ -70,12 +70,9 @@ class OwsCapCache:
         self.services = dict()
         self.cache_lifetime = 12 * 60 * 60
         try:
-
             from config import url
-            print(f"using config.py url : {url}")
             self.rediscli = Redis.from_url(url)
             self.conf = conf
-
         except:
             get_logger("OwsCapCache").error(f"wrong can't set redis url {url}")
 
@@ -159,7 +156,6 @@ class OwsCapCache:
 
     def get(self, service_type, url, force_fetch=False):
         # is a relative url, prepend https://domainName
-
         if not url.startswith("http"):
             url = "https://" + self.conf.get("domainName") + url
         if service_type not in self.services:
