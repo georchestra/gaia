@@ -7,16 +7,9 @@ import json
 from geordash.logwrap import get_logger
 import sys
 from datetime import datetime
-from os import getenv
 
 class RedisClient:
     def __init__(self, url, app):
-        if getenv('REDISURL'):
-            # running owscapcache from a python cli for tests
-            url = getenv('REDISURL')
-            print(f"using env url : {url}")
-        else:
-            print(f"using config.py url : {url}")
         self.r = redis.Redis.from_url(url)
         self.task_by_taskname = dict()
         for k in self.r.scan_iter("celery-task-meta-*"):

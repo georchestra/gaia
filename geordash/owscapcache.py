@@ -23,7 +23,6 @@ import traceback
 import requests
 
 from geordash.logwrap import get_logger
-from os import getenv
 
 is_dataset = PropertyIsEqualTo("Type", "dataset")
 non_harvested = PropertyIsEqualTo("isHarvested", "false")
@@ -71,13 +70,9 @@ class OwsCapCache:
         self.services = dict()
         self.cache_lifetime = 12 * 60 * 60
         try:
-            if getenv('REDISURL'):
-                # running owscapcache from a python cli for tests
-                url = getenv('REDISURL')
-                print(f"using env url : {url}")
-            else:
-                from config import url
-                print(f"using config.py url : {url}")
+
+            from config import url
+            print(f"using config.py url : {url}")
             self.rediscli = Redis.from_url(url)
             self.conf = conf
 

@@ -16,8 +16,12 @@ services:
       context: ../
       dockerfile: ./docker/Dockerfile_flask
     volumes:
-      - ../datadir:/etc/georchestra
+      - ../../datadir:/etc/georchestra
+      - ../gunicorn.conf.py.example:/geordash/gunicorn.conf.py:ro
+      - ../config.py.example:/geordash/config.py:ro
+      - ../geordash/celeryconfig.py.example:/geordash/geordash/celeryconfig.py:ro
       - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
+      #- ../:/geordash
 
     ports:
       - "5002:5002"
@@ -63,8 +67,12 @@ services:
       context: ../
       dockerfile: ./docker/Dockerfile_celery
     volumes:
-      - ../datadir:/etc/georchestra
+      - ../../datadir:/etc/georchestra
+      - ../gunicorn.conf.py.example:/geordash/gunicorn.conf.py:ro
+      - ../config.py.example:/geordash/config.py:ro
+      - ../geordash/celeryconfig.py.example:/geordash/geordash/celeryconfig.py:ro
       - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
+      #- ../:/geordash
 
     environment:
       REQUESTS_CA_BUNDLE: /etc/ssl/certs/ca-certificates.crt
