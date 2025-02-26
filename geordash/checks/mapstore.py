@@ -1,8 +1,7 @@
 #!/bin/env python3
 # -*- coding: utf-8 -*-
 # vim: ts=4 sw=4 et
-from celery.utils.nodenames import host_format
-from kombu.transport.virtual.base import logger
+
 from sqlalchemy import create_engine, MetaData, inspect, select, or_, and_
 from sqlalchemy.engine import URL
 from sqlalchemy.ext.automap import automap_base
@@ -11,7 +10,6 @@ from sqlalchemy.orm import sessionmaker
 import json
 import requests
 from os import getenv
-import re
 
 from owslib.wms import WebMapService
 from owslib.wfs import WebFeatureService
@@ -23,8 +21,6 @@ from celery import shared_task
 from celery import Task
 from celery import group
 from celery.utils.log import get_task_logger
-from sqlalchemy.testing.suite.test_reflection import users
-
 from geordash.logwrap import get_logger
 from geordash.utils import objtype
 
@@ -44,24 +40,13 @@ def name_for_collection_relationship(base, local_cls, referred_cls, constraint):
 
 class MapstoreChecker():
     def __init__(self, conf):
-
-        user = conf.get('pgsqlUser')
-
-        host = conf.get('pgsqlHost')
-
-        port = conf.get('pgsqlPort')
-
-        passwd = conf.get('pgsqlPassword')
-
-        database = conf.get('pgsqlDatabase')
-
         url = URL.create(
             drivername="postgresql",
-            username=user,
-            host=host,
-            port=port,
-            password=passwd,
-            database=database
+            username=conf.get('pgsqlUser'),
+            host=conf.get('pgsqlHost'),
+            port=conf.get('pgsqlPort'),
+            password=conf.get('pgsqlPassword'),
+            database=conf.get('pgsqlDatabase')
         )
 
         engine = create_engine(url)#, echo=True, echo_pool="debug")

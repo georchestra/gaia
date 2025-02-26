@@ -36,21 +36,22 @@ class GeorchestraConfig:
                 self.sections['urls']['localgn'] = localentry['url'].split('/')[1]
             except:
                 # safe default value
-                self.sections['urls'][''] = 'geonetwork'
+                self.sections['urls']['localgn'] = 'geonetwork'
             try:
                 localentry = localconfig["initialState"]["defaultState"]["catalog"]["default"]["services"]["localgs"]
                 self.sections['urls']['localgs'] = localentry['url'].split('/')[1]
             except:
                 # safe default value
                 self.sections['urls']['localgs'] = 'geoserver'
-        print(self.sections)
 
-    def get(self, key, section='default', lo=None):
+    def get(self, key, section='default'):
+        if section not in self.sections:
+            return None
         value = self.sections[section].get(key, None)
-        if lo is not None :
-            lo.info(" Before transformation url is : " + value)
         if value:
+            # this is to catch ${ENV_VAR}
             search_env = re.match('^\${(.*)}$', value)
+            # this is for url using env var http://${ENV_VAR}/geonetwork/..etc?params
             search_env2 = re.match('(.*)\${(.*)}(.*)', value)
             if search_env:
                 if getenv(search_env.group(1)):
@@ -58,6 +59,4 @@ class GeorchestraConfig:
             elif search_env2:
                 if getenv(search_env2.group(2)):
                    value = search_env2.group(1) + getenv(search_env2.group(2)) +search_env2.group(3)
-        if lo is not None:
-            lo.info("  After transformation url is : " + value)
         return value
