@@ -6,3 +6,4 @@ jsonpickle
 redis
 psycopg2
 pyproj
+gunicorn
