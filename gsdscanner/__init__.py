@@ -9,6 +9,7 @@ from .workspace import Workspace
 from .datastore import Datastore
 from .namespace import Namespace
 from .featuretype import FeatureType
+from .layer import Layer
 from .collection import Collection
 
 class GSDatadirScanner:
@@ -25,3 +26,4 @@ class GSDatadirScanner:
         self.collections['datastores'] = Collection(f"{self.basepath}/workspaces/*/*/datastore.xml", Datastore)
         self.collections['namespaces'] = Collection(f"{self.basepath}/workspaces/*/namespace.xml", Namespace)
         self.collections['featuretypes'] = Collection(f"{self.basepath}/workspaces/*/*/*/featuretype.xml", FeatureType)
+        self.collections['layers'] = Collection(f"{self.basepath}/workspaces/*/*/*/layer.xml", Layer)
