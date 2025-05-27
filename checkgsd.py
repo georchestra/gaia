@@ -16,6 +16,11 @@ for e in gds.collections['datastores'].coll:
     assert gds.collections['workspaces'].has(ds.workspaceid)
 print(f"checked {len(gds.collections['datastores'].coll)} datastores")
 
+for e in gds.collections['coveragestores'].coll:
+    cs = gds.collections['coveragestores'].coll[e]
+    assert gds.collections['workspaces'].has(cs.workspaceid)
+print(f"checked {len(gds.collections['coveragestores'].coll)} coveragestores")
+
 for e in gds.collections['featuretypes'].coll:
     ft = gds.collections['featuretypes'].coll[e]
     assert gds.collections['datastores'].has(ft.datastoreid)
@@ -28,5 +33,6 @@ for e in gds.collections['layers'].coll:
     if l.featuretypeid.startswith('FeatureTypeInfoImpl'):
         assert gds.collections['featuretypes'].has(l.featuretypeid)
     elif l.featuretypeid.startswith('CoverageInfoImpl'):
-        pass # need to parse coverages first
+        assert gds.collections['coverages'].has(l.featuretypeid)
+print(f"checked {len(gds.collections['layers'].coll)} layers")
 

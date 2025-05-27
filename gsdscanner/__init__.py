@@ -9,6 +9,8 @@ from .workspace import Workspace
 from .datastore import Datastore
 from .namespace import Namespace
 from .featuretype import FeatureType
+from .coveragestore import Coveragestore
+from .coverage import Coverage
 from .layer import Layer
 from .collection import Collection
 
@@ -24,6 +26,8 @@ class GSDatadirScanner:
     def parseAll(self):
         self.collections['workspaces'] = Collection(f"{self.basepath}/workspaces/*/workspace.xml", Workspace)
         self.collections['datastores'] = Collection(f"{self.basepath}/workspaces/*/*/datastore.xml", Datastore)
+        self.collections['coveragestores'] = Collection(f"{self.basepath}/workspaces/*/*/coveragestore.xml", Coveragestore)
         self.collections['namespaces'] = Collection(f"{self.basepath}/workspaces/*/namespace.xml", Namespace)
         self.collections['featuretypes'] = Collection(f"{self.basepath}/workspaces/*/*/*/featuretype.xml", FeatureType)
+        self.collections['coverages'] = Collection(f"{self.basepath}/workspaces/*/*/*/coverage.xml", Coverage)
         self.collections['layers'] = Collection(f"{self.basepath}/workspaces/*/*/*/layer.xml", Layer)
