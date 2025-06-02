@@ -34,5 +34,5 @@ class GSDatadirScanner:
         self.collections['coverages'] = Collection(f"{self.basepath}/workspaces/*/*/*/coverage.xml", Coverage)
         self.collections['layers'] = Collection(f"{self.basepath}/workspaces/*/*/*/layer.xml", Layer)
         self.collections['styles'] = Collection([f"{self.basepath}/styles/*.xml", f"{self.basepath}/workspaces/*/styles/*.xml"], Style)
-        self.collections['slds'] = Collection([f"{self.basepath}/*/styles/*.sld", f"{self.basepath}/workspaces/*/styles/*.sld"], SLD)
+        self.collections['slds'] = Collection([f"{self.basepath}/styles/*.sld", f"{self.basepath}/workspaces/*/styles/*.sld"], SLD)
         # XXX pour geodata *.shp, *.gpkg & *.tif avec find -iname ?
