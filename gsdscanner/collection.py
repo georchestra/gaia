@@ -17,7 +17,11 @@ class Collection:
         return f"{self.type}: glob={self.glob}, entries={len(self.coll)}"
 
     def list(self):
-        for f in glob(self.glob):
+        if type(self.glob) == list:
+            files = sum([glob(x) for x in self.glob], [])
+        else:
+            files = glob(self.glob)
+        for f in files:
             e = self.type(f)
             e.parse()
             self.coll[e.id] = e
