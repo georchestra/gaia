@@ -2,12 +2,13 @@
 # -*- coding: utf-8 -*-
 # vim: ts=4 sw=4 et
 
+from os.path import dirname
 from gsdscanner import GSDatadirScanner
 
 gds = GSDatadirScanner('/data/webapps/geoserver')
 print(f"datadir version: {gds.version}")
 gds.parseAll()
-for d in ('workspaces', 'datastores', 'namespaces', 'featuretypes', 'layers'):
+for d in ('workspaces', 'datastores', 'namespaces', 'featuretypes', 'layers', 'styles', 'slds'):
     for e in gds.collections[d].coll:
         print(f"{e} -> {gds.collections[d].coll[e]}")
 
@@ -36,3 +37,22 @@ for e in gds.collections['layers'].coll:
         assert gds.collections['coverages'].has(l.featuretypeid)
 print(f"checked {len(gds.collections['layers'].coll)} layers")
 
+for e in gds.collections['slds'].coll:
+    s = gds.collections['slds'].coll[e]
+    if s.filesize <= 0:
+        print(f"{s.file} is empty")
+print(f"checked {len(gds.collections['slds'].coll)} slds")
+
+for e in gds.collections['styles'].coll:
+    s = gds.collections['styles'].coll[e]
+    if '/workspaces/' in s.file:
+        assert gds.collections['workspaces'].has(s.workspaceid)
+    else:
+        assert s.workspaceid == None
+    # check that sldfilename relative to style exists XXX doesnt handle css styles yet
+    sldpath = dirname(s.file) + '/' + s.sldfilename
+    if not gds.collections['slds'].has(sldpath) and not sldpath.endswith('.css'):
+        print(f"{sldpath} not found")
+print(f"checked {len(gds.collections['styles'].coll)} styles")
+
+# check that all layers appear in a wms getcap
