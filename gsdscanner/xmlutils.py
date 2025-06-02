@@ -4,8 +4,8 @@
 
 from lxml import etree
 
-def getelemat(xml: etree._ElementTree, path: str):
-    r = xml.xpath(path)
+def getelemat(xml: etree._ElementTree, path: str, nsmap=None):
+    r = xml.xpath(path, namespaces=nsmap)
     if len(r) > 0:
         return r[0].text
     return None
