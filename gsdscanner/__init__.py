@@ -14,6 +14,8 @@ from .coverage import Coverage
 from .layer import Layer
 from .style import Style
 from .sld import SLD
+from .vectordata import VectorData
+from .rasterdata import RasterData
 from .collection import Collection
 
 class GSDatadirScanner:
@@ -35,4 +37,5 @@ class GSDatadirScanner:
         self.collections['layers'] = Collection(f"{self.basepath}/workspaces/*/*/*/layer.xml", Layer)
         self.collections['styles'] = Collection([f"{self.basepath}/styles/*.xml", f"{self.basepath}/workspaces/*/styles/*.xml"], Style)
         self.collections['slds'] = Collection([f"{self.basepath}/styles/*.sld", f"{self.basepath}/workspaces/*/styles/*.sld"], SLD)
-        # XXX pour geodata *.shp, *.gpkg & *.tif avec find -iname ?
+        self.collections['vectordatas'] = Collection([f"{self.basepath}/data/**/{f}" for f in ['*.shp', '*.SHP', '*.gpkg']], VectorData)
+        self.collections['rasterdatas'] = Collection([f"{self.basepath}/data/**/{f}" for f in ['*.tif', '*.tiff']], RasterData)
