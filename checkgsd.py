@@ -8,7 +8,7 @@ from gsdscanner import GSDatadirScanner
 gds = GSDatadirScanner('/data/webapps/geoserver')
 print(f"datadir version: {gds.version}")
 gds.parseAll()
-for d in ('workspaces', 'datastores', 'namespaces', 'featuretypes', 'layers', 'styles', 'slds'):
+for d in ('workspaces', 'datastores', 'namespaces', 'featuretypes', 'layers', 'styles', 'slds', 'vectordatas', 'rasterdatas'):
     for e in gds.collections[d].coll:
         print(f"{e} -> {gds.collections[d].coll[e]}")
 
