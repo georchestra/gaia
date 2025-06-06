@@ -15,7 +15,6 @@ class SLD:
         self.id = self.file
         self.name = None
         self.firstrulename = None
-        self.parse()
 
     def __repr__(self):
         return f"SLD: file={self.file}, id={self.id}, name={self.name}"

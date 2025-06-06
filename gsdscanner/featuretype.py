@@ -8,7 +8,6 @@ from .xmlutils import getelemat
 class FeatureType:
     def __init__(self, xmlf):
         self.file = xmlf
-        self.parse()
 
     def __repr__(self):
         return f"FeatureType: file={self.file}, id={self.id}, name={self.name}, title={self.title}"

@@ -8,7 +8,6 @@ from .xmlutils import getelemat
 class Namespace:
     def __init__(self, xmlf):
         self.file = xmlf
-        self.parse()
 
     def __repr__(self):
         return f"Namespace: file={self.file}, id={self.id}, prefix={self.prefix}"
