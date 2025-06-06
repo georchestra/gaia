@@ -21,3 +21,5 @@ class Datastore:
         self.workspaceid = getelemat(xml, '/dataStore/workspace/id')
         # can be none
         self.connurl = getelemat(xml, '/dataStore/connectionParameters/entry[@key="url"]')
+        # if type = PostGIS (JNDI) look for name matching connurl java:comp/env/ in tomcat's conf/server.xml
+        # and list tables in the given database
