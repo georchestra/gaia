@@ -26,6 +26,7 @@ for e in gds.collections['featuretypes'].coll:
     ft = gds.collections['featuretypes'].coll[e]
     assert gds.collections['datastores'].has(ft.datastoreid)
     assert gds.collections['namespaces'].has(ft.namespaceid)
+    # if datastore is of type JNDI, look for a table name matching nativeName in the linked postgis JNDI cnx
 
 print(f"checked {len(gds.collections['featuretypes'].coll)} featuretypes")
 
@@ -54,5 +55,18 @@ for e in gds.collections['styles'].coll:
     if not gds.collections['slds'].has(sldpath) and not sldpath.endswith('.css'):
         print(f"{sldpath} not found")
 print(f"checked {len(gds.collections['styles'].coll)} styles")
+
+# check for RasterData/VectorData
+# for Vector:
+# if shapefile:
+#   look for a type=ShapeFile datastore pointing at the parent folder
+#   or a 'directory of spatial files (shapefiles) datastore pointing at the parent folder (connectionParameters, entry key=url)
+#   then featuretype.xml/nativeName=shapefile name in folder ?
+# if *.gpkg:
+#  look for a type=GeoPackage datastore with connectionParameters/entry[name=database] pointing at the geopackage file
+#   then featuretype.xml/nativeName=layer name in the geopackage
+# for Raster:
+# look for a CoverageStore type=GeoTIFF pointing at the relative path
+# or a CoverageStore type=ImageMosaic pointing at the parent folder, folder should have a VectorData/tileindex with a feature pointing a the raster
 
 # check that all layers appear in a wms getcap
