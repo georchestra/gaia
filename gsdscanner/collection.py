@@ -20,7 +20,7 @@ class Collection:
         if type(self.glob) == list:
             files = sum([glob(x, recursive='**' in x) for x in self.glob], [])
         else:
-            files = glob(self.glob, recursive='**' in x)
+            files = glob(self.glob, recursive='**' in self.glob)
         for f in files:
             e = self.type(f)
             e.parse()
