@@ -23,7 +23,6 @@ class RasterData:
         if ds is None:
             print(f"failed opening {self.file}")
             return
-        print(self.file)
         self.type = ds.GetDriver().GetDescription()
         sr = ds.GetSpatialRef()
         if sr is not None:
