@@ -7,14 +7,14 @@ from geordash.logwrap import get_logger
 import psutil
 
 
-def find_geoserver_datadir(default="/srv/webapps/geoserver"):
+def find_geoserver_datadir(default):
     """try hard to find the path of the geoserver datadir
     iterate of the list of processes, and try to find one which has:
     - java for the process name
     - either:
       - -DGEOSERVER_DATA_DIR in its commandline
       - or GEOSERVER_DATA_DIR in its environment
-    if not found, return the default value for ansible deployments
+    if not found and the fallback path given was None, return the default value for ansible deployments
     """
     for proc in psutil.process_iter():
         try:
@@ -27,6 +27,8 @@ def find_geoserver_datadir(default="/srv/webapps/geoserver"):
                     return pinfo["environ"]["GEOSERVER_DATA_DIR"]
         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
             pass
+    if default is None:
+        default = "/srv/webapps/geoserver"
     return default
 
 
