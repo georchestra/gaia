@@ -4,8 +4,9 @@
 
 from os.path import dirname
 from gsdscanner import GSDatadirScanner
+from geordash.utils import find_geoserver_datadir
 
-gds = GSDatadirScanner('/data/webapps/geoserver')
+gds = GSDatadirScanner(find_geoserver_datadir('/data/webapps/geoserver'))
 print(f"datadir version: {gds.version}")
 gds.parseAll()
 for d in ('workspaces', 'datastores', 'namespaces', 'featuretypes', 'layers', 'styles', 'slds', 'vectordatas', 'rasterdatas'):
