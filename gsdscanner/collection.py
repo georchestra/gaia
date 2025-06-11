@@ -26,5 +26,8 @@ class Collection:
             e.parse()
             self.coll[e.id] = e
 
+    def len(self):
+        return len(self.coll)
+
     def has(self, key):
         return key in self.coll
