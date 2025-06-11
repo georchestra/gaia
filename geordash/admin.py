@@ -61,6 +61,11 @@ def geoserver():
     workspaces = ws["workspaces"]["workspace"]
     return render_template("admin/geoserver.html", workspaces=workspaces)
 
+@admin_bp.route("/geoserver/datadir")
+@check_role(role="ADMINISTRATOR")
+def geoserver_datadir():
+    gsd = app.extensions["owscache"].get_geoserver_datadir_view()
+    return render_template("admin/geoserver/datadir.html", gsd=gsd)
 
 @admin_bp.route("/mapstore/maps")
 @check_role(role="MAPSTORE_ADMIN")
