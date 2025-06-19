@@ -5,7 +5,7 @@
 from lxml import etree
 from .xmlutils import getelemat
 
-class Namespace:
+class Namespace(dict):
     def __init__(self, xmlf):
         self.file = xmlf
 

@@ -5,7 +5,7 @@
 from lxml import etree
 from .xmlutils import getelemat
 
-class Coveragestore:
+class Coveragestore(dict):
     def __init__(self, xmlf):
         self.file = xmlf
 

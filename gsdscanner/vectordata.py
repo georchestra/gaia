@@ -5,7 +5,7 @@
 from os.path import getsize
 from osgeo.ogr import Open
 
-class VectorData:
+class VectorData(dict):
     def __init__(self, path):
         self.file = path
         self.filesize = getsize(path)

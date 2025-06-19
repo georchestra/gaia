@@ -5,7 +5,7 @@
 from lxml import etree
 from .xmlutils import getelemat
 
-class FeatureType:
+class FeatureType(dict):
     def __init__(self, xmlf):
         self.file = xmlf
 

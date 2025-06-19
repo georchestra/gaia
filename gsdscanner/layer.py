@@ -5,7 +5,7 @@
 from lxml import etree
 from .xmlutils import getelemat
 
-class Layer:
+class Layer(dict):
     def __init__(self, xmlf):
         self.file = xmlf
 

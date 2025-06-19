@@ -5,7 +5,7 @@
 from os.path import getsize
 from osgeo.gdal import Open
 
-class RasterData:
+class RasterData(dict):
     def __init__(self, path):
         self.file = path
         self.filesize = getsize(path)

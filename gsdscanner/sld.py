@@ -8,7 +8,7 @@ from lxml.etree import XMLParser
 from .xmlutils import getelemat
 
 
-class SLD:
+class SLD(dict):
     def __init__(self, xmlf):
         self.file = xmlf
         self.filesize = getsize(xmlf)
