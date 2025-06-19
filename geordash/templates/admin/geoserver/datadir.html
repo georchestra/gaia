@@ -9,7 +9,7 @@ détails pour le datadir situé dans <code>{{ gsd.basepath }}</code>, version <c
 
 <ul>
 {% for k in gsd.collections.keys() %}
-<li><a href='{{ url_for('dashboard.admin.geoserver_datadir') }}'>{{ gsd.collections[k].len() }} entries for {{ k }}</li>
+<li><a href='{{ url_for('dashboard.admin.geoserver_datadir_collection', colltype=k) }}'>{{ gsd.collections[k].len() }} entries for {{ k }}</li>
 {% endfor %}
 </ul>
 </div>
