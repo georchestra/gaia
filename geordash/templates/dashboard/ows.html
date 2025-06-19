@@ -30,7 +30,7 @@ $(document).ready(function(){
         <!-- Your page content -->
         {% block content %}
 <div class="container">
-<p id='details'>Details pour le service {{ type }} {{ s.s.url }} en version {{ s.s.version }}</p>
+<p id='details'>Details pour le service {{ type }} <a href="{{s.s.url}}?request=GetCapabilities&service={{ type }}&version={{ s.s.version }}">{{ s.s.url }} (lien vers les capacités)</a> en version {{ s.s.version }}</p>
 <p>titre: {{ s.s.identification.title }}<p>
 <p>résumé: {{ s.s.identification.abstract }}</p>
 <p>capacités du service récupérées: {{ s.timestamp | datetimeformat }}
