@@ -10,10 +10,10 @@ class Namespace(dict):
         self.file = xmlf
 
     def __repr__(self):
-        return f"Namespace: file={self.file}, id={self.id}, prefix={self.prefix}"
+        return f"Namespace: file={self.file}, id={self.id}, name={self.name}"
 
     def parse(self):
         xml = etree.parse(self.file)
         self.id = getelemat(xml, '/namespace/id')
-        self.prefix = getelemat(xml, '/namespace/prefix')
+        self.name = getelemat(xml, '/namespace/prefix')
         self.uri = getelemat(xml, '/namespace/uri')
