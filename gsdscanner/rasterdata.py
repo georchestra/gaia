@@ -9,14 +9,14 @@ class RasterData(dict):
     def __init__(self, path):
         self.file = path
         self.filesize = getsize(path)
-        self.id = self.file
+        self.id = self.file.replace('/','~')
         self.projection = None
         self.bbox = None
         self.type = None
 #        self.parse()
 
     def __repr__(self):
-        return f"RasterData: type={self.type}, proj={self.projection}, bbox={self.bbox}"
+        return f"RasterData: id={self.id}, type={self.type}, proj={self.projection}, bbox={self.bbox}"
 
     def parse(self):
         ds = Open(self.file)

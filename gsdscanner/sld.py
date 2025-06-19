@@ -12,7 +12,7 @@ class SLD(dict):
     def __init__(self, xmlf):
         self.file = xmlf
         self.filesize = getsize(xmlf)
-        self.id = self.file
+        self.id = self.file.replace('/','~')
         self.name = None
         self.firstrulename = None
 

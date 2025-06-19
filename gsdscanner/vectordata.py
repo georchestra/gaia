@@ -9,12 +9,12 @@ class VectorData(dict):
     def __init__(self, path):
         self.file = path
         self.filesize = getsize(path)
-        self.id = self.file
+        self.id = self.file.replace('/','~')
         self.type = None
         self.layers = dict()
 
     def __repr__(self):
-        return f"VectorData: type={self.type}, layers={self.layers}"
+        return f"VectorData: id={self.id}, type={self.type}, layers={self.layers}"
 
     def parse(self):
         ds = Open(self.file)
