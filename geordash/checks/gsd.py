@@ -157,7 +157,7 @@ def check_style(gsd: GSDatadirScanner, item: Style, key: str, ret: dict):
     return ret
 
 
-def check_sld(gsd: GSDatadirScanner, item: Sld, key: str, ret: dict):
+def check_sld(gsd: GSDatadirScanner, item: SLD, key: str, ret: dict):
     #    if s.filesize <= 0:
     #        print(f"{s.file} is empty")
     return ret
