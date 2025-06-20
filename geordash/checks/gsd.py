@@ -3,6 +3,7 @@
 # vim: ts=4 sw=4 et
 
 from celery import shared_task
+from celery import group
 from flask import current_app as app
 
 from gsdscanner import GSDatadirScanner
