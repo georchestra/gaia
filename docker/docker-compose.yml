@@ -21,6 +21,7 @@ services:
       - ../config.py.example:/geordash/config.py:ro
       - ../geordash/celeryconfig.py.example:/geordash/geordash/celeryconfig.py:ro
       - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
+      - ../:/geordash
       #- ../:/geordash
 
     ports:
@@ -72,6 +73,7 @@ services:
       - ../config.py.example:/geordash/config.py:ro
       - ../geordash/celeryconfig.py.example:/geordash/geordash/celeryconfig.py:ro
       - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
+      - ../:/geordash
       #- ../:/geordash
 
     environment:

@@ -11,6 +11,8 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 import glob
 from pathlib import Path
+from flask import current_app as app
+
 Base = declarative_base()
 
 # Define the Metadata model (example schema of a GeoNetwork metadata table)
@@ -136,11 +138,14 @@ class GeonetworkDatadirChecker:
             else:
                 # append useless folder
                 self.meta.append(foldermeta)
-        print(self.meta)
+
+    def get_metauseless_list(self):
+        return self.meta
+
+    def process_size(self):
         total_could_be_deleted = 0
         for path in self.meta:
             total_could_be_deleted += get_folder_size(path)
-
         print("In total " + str(total_could_be_deleted) + " on "+ str(get_folder_size("/mnt/geonetwork_datdadir")) +" bytes could be deleted")
 
     def session(self):
@@ -152,8 +157,4 @@ class GeonetworkDatadirChecker:
         return self.sessiono
 
 
-def check_configs():
-    """Check geonetwork datadirs."""
-    return False
-
-GeonetworkDatadirChecker(conf)
+# GeonetworkDatadirChecker(conf)
