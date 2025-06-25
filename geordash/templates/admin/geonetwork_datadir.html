@@ -1,0 +1,40 @@
+{% set title = 'admin geonetwork' %}
+{% include 'header.tmpl' %}
+
+        {% block scripts %}
+<script>
+$(document).ready(function(){
+{% if useless_ressource | length > 0 %}
+  $('#uselessres').bootstrapTable({
+    data: {{ useless_ressource |tojson }},
+    columns: [
+      {'field': 'url', 'title': "Identifier", 'formatter': 'urlFormatter'},
+      {'field': 'listableInHeaderSelector', 'title': "Visible"},
+      {'field': 'name', 'title':'Titre' },
+      {'field': 'filter', 'title': "Filtre"}
+    ]
+  });
+{% else %}
+  $('#portalstable').remove()
+  $('#portalheader').html("No job run yet.")
+{% endif %}
+});
+</script>
+        {% endblock %}
+        <!-- Your page content -->
+        {% block content %}
+   <div class="container">
+<h1>Geonetwork datadir Checker</h1>
+<div id='portalheader'>
+List of the useless ressources in geonetwork datadir:
+</div>
+    <table
+      id="uselessres"
+      data-pagination="true"
+      data-toggle="true"
+      data-search="true">
+   </table>
+   </div>
+        {% endblock %}
+</body>
+</html>
