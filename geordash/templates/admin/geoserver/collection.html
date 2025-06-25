@@ -1,0 +1,37 @@
+{% set title = 'datadir geoserver' %}
+{% include 'header.tmpl' %}
+
+        {% block scripts %}
+<script>
+$(document).ready(function(){
+{% if coll | length > 0 %}
+  let tableData = {{ coll | tojson }};
+  $('#table').bootstrapTable({
+    data: tableData,
+    columns: [
+      {'title': 'Index', 'formatter': 'runningFormatter'},
+      {'field': 'url', 'title': "Identifier", 'formatter': 'urlFormatter', 'sortable': true},
+      {'title': 'Name', 'field': 'name', 'sortable': true},
+    ]
+  });
+{% else %}
+// XX remove table and print fallback msg
+{% endif %}
+});
+</script>
+        {% endblock scripts %}
+{% block content %}
+ <div class="container">
+<h1>Datadir Geoserver</h1>
+
+<h2 id='contents'>Collection of {{ coll | length }} {{ colltype }}</h2>
+<table id="table"
+  data-toggle="true"
+  data-pagination="true"
+  data-sort-name="id"
+  data-search="true">
+</table>
+</div>
+{% endblock %}
+</body>
+</html>
