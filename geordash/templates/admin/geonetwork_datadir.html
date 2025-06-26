@@ -4,16 +4,16 @@
         {% block scripts %}
 <script>
 $(document).ready(function(){
-{% if useless_ressource | length > 0 %}
+{% if useless_ressource | length >= 0 %}
   $('#uselessres').bootstrapTable({
     data: {{ useless_ressource |tojson }},
     columns: [
-      {'field': 'url', 'title': "Identifier", 'formatter': 'urlFormatter'},
-      {'field': 'listableInHeaderSelector', 'title': "Visible"},
-      {'field': 'name', 'title':'Titre' },
-      {'field': 'filter', 'title': "Filtre"}
+      {'field': 'path', 'title': "Identifier"},
+      {'field': 'size', 'title': "taille"},//chemin, taille, 
     ]
   });
+  $("#taille").html('<em>{{total_process_size}}</em>')
+
 {% else %}
   $('#portalstable').remove()
   $('#portalheader').html("No job run yet.")
@@ -21,10 +21,11 @@ $(document).ready(function(){
 });
 </script>
         {% endblock %}
-        <!-- Your page content -->
+        <!-- Your page content --> 
         {% block content %}
    <div class="container">
 <h1>Geonetwork datadir Checker</h1>
+<p id="taille"></p>
 <div id='portalheader'>
 List of the useless ressources in geonetwork datadir:
 </div>

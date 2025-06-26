@@ -142,11 +142,15 @@ class GeonetworkDatadirChecker:
     def get_metauseless_list(self):
         return self.meta
 
-    def process_size(self):
+    def all_process_size(self):
         total_could_be_deleted = 0
         for path in self.meta:
             total_could_be_deleted += get_folder_size(path)
-        print("In total " + str(total_could_be_deleted) + " on "+ str(get_folder_size("/mnt/geonetwork_datdadir")) +" bytes could be deleted")
+        return "In total " + str(total_could_be_deleted) + " on "+ str(get_folder_size("/mnt/geonetwork_datdadir")) +" bytes could be deleted"
+
+    
+    def process_size(self, path):
+        return get_folder_size(path)
 
     def session(self):
         try:
