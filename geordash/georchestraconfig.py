@@ -7,7 +7,7 @@ from itertools import chain
 from os import getenv
 import json
 import re
-
+import pprint
 
 class GeorchestraConfig:
     def __init__(self):
@@ -50,6 +50,20 @@ class GeorchestraConfig:
             except:
                 # safe default value
                 self.sections["urls"]["localgs"] = "geoserver"
+
+    def tostr(self):
+        # pp = pprint.PrettyPrinter(indent=4)
+        # return pp.pprint(self.sections)
+
+        str = ""
+        for key in self.sections:
+            str += key + ":\r\n<br>"
+            for key2 in self.sections[key]:
+                str += " \t&emsp;" + key2 + " : "
+                str+= " \t&emsp;" + self.sections[key][key2] + " = " + self.get(key2, section=key) + "\r\n<br> "
+        print(type(str))
+        print(f"Keys in string: {str}")
+        return str
 
     def get(self, key, section="default"):
         if section not in self.sections:
