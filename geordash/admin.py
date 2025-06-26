@@ -55,7 +55,8 @@ def geonetwork():
 @check_role(role="GN_ADMIN")
 def geonetwork_datadir():
     localgn = app.extensions["conf"].get("localgn", "urls")
-    useless_ressource = app.extensions["gndc"].get_metauseless_list()
+    useless_ressource = [{"paht":f,"size":app.extensions["gndc"].process_size(f)} for f in app.extensions["gndc"].get_metauseless_list()]
+    total_process_size = app.extensions["gndc"].all_process_size()
 
     if type(useless_ressource) != list:
         return make_response(
@@ -65,7 +66,7 @@ def geonetwork_datadir():
             )
         )
 
-    return render_template("admin/geonetwork_datadir.html", useless_ressource=useless_ressource)
+    return render_template("admin/geonetwork_datadir.html", useless_ressource=useless_ressource, total_process_size=total_process_size)
 
 @admin_bp.route("/geoserver")
 @check_role(role="ADMINISTRATOR")
