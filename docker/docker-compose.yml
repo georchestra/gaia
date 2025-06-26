@@ -12,8 +12,10 @@ services:
     environment:
       - REDIS_REPLICATION_MODE=master
   gaia-back:
-    image: "docker-gaia-back"
-
+    #  image: "docker-gaia-back"
+    build:
+      context: ../
+      dockerfile: ./docker/Dockerfile_flask
     volumes:
       - ../../datadir:/etc/georchestra
       - ../gunicorn.conf.py.example:/geordash/gunicorn.conf.py:ro
@@ -65,7 +67,10 @@ services:
 
 
   gaia-celery:
-    image: "docker-gaia-celery:latest"
+    # image: "docker-gaia-celery:latest"
+    build:
+      context: ../
+      dockerfile: ./docker/Dockerfile_celery
 
     volumes:
       - ../../datadir:/etc/georchestra
