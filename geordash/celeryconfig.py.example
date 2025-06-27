@@ -5,7 +5,7 @@ broker_url = url
 result_backend = url
 worker_concurrency = 1
 # autoscale = 8,1
-imports = ("geordash.checks.mapstore", "geordash.checks.ows", "geordash.checks.csw")
+imports = ("geordash.checks.mapstore", "geordash.checks.ows", "geordash.checks.csw", "geordash.checks.mviewer")
 # worker_pool = solo
 worker_log_format = (
     "[%(asctime)s: %(levelname)s/%(processName)s/%(threadName)s] WORKER %(message)s"

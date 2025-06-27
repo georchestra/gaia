@@ -8,12 +8,14 @@ from flask import current_app as app
 from flask import Blueprint
 from flask import request, abort
 from flask import jsonify
+import requests
 
 from geordash.utils import unmunge
 from geordash.checks.mapstore import check_res, check_configs, check_resources
 from geordash.tasks.fetch_csw import get_records
 import geordash.checks.ows
 import geordash.checks.csw
+import geordash.checks.mviewer
 from geordash.decorators import check_role
 
 tasks_bp = Blueprint("tasks", __name__, url_prefix="/tasks")
@@ -192,6 +194,15 @@ def check_mapstore_resources():
         )
     return {"result_id": groupresult.id}
 
+
+@tasks_bp.route("/check/mviewer/<string:url>.json")
+def check_mviewer(url):
+    url = unmunge(url, False)
+    r = requests.get(url)
+    if r.status_code != 200:
+        return abort(404)
+    result = geordash.checks.mviewer.check_mviewer.delay(url)
+    return {"result_id": result.id}
 
 @tasks_bp.route("/check/ows/<string:stype>/<string:url>/<string:lname>.json")
 def check_owslayer(stype, url, lname):

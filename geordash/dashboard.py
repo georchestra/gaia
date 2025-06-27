@@ -5,11 +5,13 @@
 from flask import Blueprint
 from flask import request, render_template, abort, url_for
 from flask import current_app as app
+import requests
 
 from geordash.decorators import is_superuser, check_role
 from geordash.checks.mapstore import get_resources_using_ows, get_res
 from geordash.api import mapstore_get, gninternalid, get_res_details
 from geordash.utils import find_localmduuid, unmunge
+from geordash.mviewer import parse_map
 
 import json
 
@@ -229,6 +231,22 @@ def owslayer(stype, url, lname):
         previous_jobs=all_jobs_for_owslayer,
     )
 
+@dash_bp.route("/mviewer/<string:url>")
+def mviewer(url):
+    url = unmunge(url, False)
+    r = requests.get(url)
+    if r.status_code == 200:
+        all_jobs_for_mviewer = app.extensions["rcli"].get_taskids_by_taskname_and_args(
+            "geordash.checks.mviewer.check_mviewer", [url]
+        )
+        return render_template(
+            "mviewer.html",
+            url=url.replace("/", "~"),
+            previous_jobs=all_jobs_for_mviewer,
+            details=parse_map(r.text)
+        )
+    else:
+        return abort(404)
 
 @dash_bp.route("/map/<int:mapid>")
 def map(mapid):

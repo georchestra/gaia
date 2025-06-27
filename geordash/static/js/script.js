@@ -235,6 +235,10 @@ const GetPbStr = (p) => {
       return `Metadata with uuid ${p.uuid} doesnt exist in CSW service at ${p.url}`
     case 'MdHasNoLinks':
       return `No links to OGC layers or download links ?`
+    case 'NoSuchSld':
+      return `Sld with url ${p.url} doesnt exist`
+    case 'NoSuchResource':
+      return `Resource '${p.restype}' with id '${p.resid}' doesnt exist`
     default:
       return `Unhandled error code ${p.type} for problem ${p}`
   }
