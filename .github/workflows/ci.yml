@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - '*.x'
+    tags:
+      - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build Docker images
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Getting image tag
+        if: github.repository == 'georchestra/gaia' && github.actor != 'dependabot[bot]'
+        id: version
+        run: echo "VERSION=$(echo $GITHUB_REF | cut -d / -f 3)" >> $GITHUB_OUTPUT
+
+      - name: Build Celery image
+        run: docker build -f Dockerfile_celery -t georchestra/gaia-celery:latest .
+      - name: Build Backend image
+        run: docker build -f Dockerfile_flask -t georchestra/gaia:latest .
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+
+      - name: "Pushing latest to docker.io"
+        if: github.ref == 'refs/heads/master' && github.repository == 'georchestra/gaia' && github.actor != 'dependabot[bot]' && github.event_name != 'pull_request'
+        run: |
+          docker push georchestra/gaia-celery:latest
+          docker push georchestra/gaia:latest
+
+      - name: "Update Docker Hub Gaia Celery Description"
+        if: github.ref == 'refs/heads/master' && github.repository == 'georchestra/gaia' && github.actor != 'dependabot[bot]' && github.event_name != 'pull_request'
+        uses: peter-evans/dockerhub-description@v3
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+          repository: georchestra/gaia-celery
+          readme-filepath: ./DOCKER_HUB.md
+          short-description: 'Gaia celery module for the geOrchestra SDI'
+
+      - name: "Update Docker Hub Gaia Description"
+        if: github.ref == 'refs/heads/master' && github.repository == 'georchestra/gaia' && github.actor != 'dependabot[bot]' && github.event_name != 'pull_request'
+        uses: peter-evans/dockerhub-description@v3
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+          repository: georchestra/gaia
+          readme-filepath: ./DOCKER_HUB.md
+          short-description: 'Gaia module for the geOrchestra SDI'
+
+      - name: "Pushing branch/tag to docker.io"
+        if: contains(github.ref, 'refs/tags/') && github.repository == 'georchestra/gaia' && github.actor != 'dependabot[bot]' && github.event_name != 'pull_request'
+        run: |
+          docker tag georchestra/gaia-celery:latest georchestra/gaia-celery:${{ steps.version.outputs.VERSION }}
+          docker tag georchestra/gaia:latest georchestra/gaia:${{ steps.version.outputs.VERSION }}
+          docker push georchestra/gaia-celery:${{ steps.version.outputs.VERSION }}
+          docker push georchestra/gaia:${{ steps.version.outputs.VERSION }}
