@@ -35,7 +35,7 @@
 
 ## Where is it built
 
-This image is built using docker compose file in repo's folder.
+This image is built using docker files in repo's `docker` folder.
 
 # License
 
