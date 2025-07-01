@@ -42,6 +42,22 @@ def geonetwork():
         p["xurl"] = url_for("dashboard.csw", portal=p["uuid"])
     return render_template("admin/geonetwork.html", portals=portals)
 
+@admin_bp.route("/geonetwork/datadir")
+@check_role(role="GN_ADMIN")
+def geonetwork_datadir():
+    localgn = app.extensions["conf"].get("localgn", "urls")
+    useless_ressource = [{"paht":f,"size":app.extensions["gndc"].process_size(f)} for f in app.extensions["gndc"].get_metauseless_list()]
+    total_process_size = app.extensions["gndc"].all_process_size()
+
+    if type(useless_ressource) != list:
+        return make_response(
+            jsonify(
+                {"error": f"an error occured when fetching subportals: got {useless_ressource}"},
+                404,
+            )
+        )
+
+    return render_template("admin/geonetwork_datadir.html", useless_ressource=useless_ressource, total_process_size=total_process_size)
 
 @admin_bp.route("/geoserver")
 @check_role(role="ADMINISTRATOR")

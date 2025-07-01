@@ -12,6 +12,7 @@ services:
     environment:
       - REDIS_REPLICATION_MODE=master
   gaia-back:
+    #  image: "docker-gaia-back"
     build:
       context: ../
       dockerfile: ./docker/Dockerfile_flask
@@ -21,6 +22,7 @@ services:
       - ../config.py.example:/geordash/config.py:ro
       - ../geordash/celeryconfig.py.example:/geordash/geordash/celeryconfig.py:ro
       - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
+      - ../:/geordash
       #- ../:/geordash
 
     ports:
@@ -63,15 +65,18 @@ services:
 
 
   gaia-celery:
+    # image: "docker-gaia-celery:latest"
     build:
       context: ../
       dockerfile: ./docker/Dockerfile_celery
+
     volumes:
       - ../../datadir:/etc/georchestra
       - ../gunicorn.conf.py.example:/geordash/gunicorn.conf.py:ro
       - ../config.py.example:/geordash/config.py:ro
       - ../geordash/celeryconfig.py.example:/geordash/geordash/celeryconfig.py:ro
       - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
+      - ../:/geordash
       #- ../:/geordash
 
     environment:
