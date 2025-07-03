@@ -8,12 +8,14 @@ from flask import current_app as app
 from flask import Blueprint
 from flask import request, abort
 from flask import jsonify
+import requests
 
 from geordash.utils import unmunge
 from geordash.checks.mapstore import check_res, check_configs, check_resources
 from geordash.tasks.fetch_csw import get_records
 import geordash.checks.ows
 import geordash.checks.csw
+import geordash.checks.mviewer
 from geordash.decorators import check_role
 
 tasks_bp = Blueprint("tasks", __name__, url_prefix="/tasks")
@@ -32,6 +34,7 @@ def result(id: str) -> dict[str, object]:
         # regular task triggered by beat, the asyncresult first result entry contains the groupresult id
         if type(result.result) == list and result.name in (
             "geordash.checks.mapstore.check_resources",
+            "geordash.checks.mviewer.check_all",
             "geordash.checks.ows.owsservice",
             "geordash.checks.csw.check_catalog",
         ):
@@ -191,6 +194,26 @@ def check_mapstore_resources():
             "geordash.checks.mapstore.check_resources", [], groupresult.id
         )
     return {"result_id": groupresult.id}
+
+
+@tasks_bp.route("/check/mviewer/configs.json")
+def check_all_mviewer():
+    groupresult = geordash.checks.mviewer.check_all()
+    if groupresult.id:
+        app.extensions["rcli"].add_taskid_for_taskname_and_args(
+            "geordash.checks.mviewer.check_all", [], groupresult.id
+        )
+    return {"result_id": groupresult.id}
+
+
+@tasks_bp.route("/check/mviewer/<string:url>.json")
+def check_mviewer(url):
+    url = unmunge(url, False)
+    r = requests.get(url)
+    if r.status_code != 200:
+        return abort(404)
+    result = geordash.checks.mviewer.check_mviewer.delay(url)
+    return {"result_id": result.id}
 
 
 @tasks_bp.route("/check/ows/<string:stype>/<string:url>/<string:lname>.json")

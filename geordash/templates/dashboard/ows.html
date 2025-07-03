@@ -39,7 +39,7 @@ $(document).ready(function(){
 {% endif %}
 </p>
 <h2 id='pbtitle'>Problems</h2>
-<div id='pbdetails'>No check have been run yet !</div>
+<div id='pbdetails'>No group check has been run yet</div>
 <div id="problems"></div>
 <form id='check' action="javascript:CheckRes('owsservice/{{ type }}', '{{ url }}', {{ superuser|int }});">
 <input type=submit value="check all layers now">
@@ -65,7 +65,7 @@ $(document).ready(function(){
   data-search="true">
 </table>
 <h2 id='previous'>Previous</h2>
-<p id='previouslist'></p>
+<p id='previouslist'>No previous group check result has been found</p>
 </div>
 	{% endblock content %}
     </body>

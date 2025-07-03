@@ -182,6 +182,11 @@ instead, amount of maps/contexts that the current user can access.
 - lists current problems on the contexts
 - allows to manually trigger a check for the integrity of all contexts
 
+### `/admin/mviewer/configs`
+- lists all known mviewer configs in a table, with links to view/forget about them
+- lists current problems on the configs
+- allows to manually trigger a check for the integrity of all known configs
+
 ### `/admin/geonetwork`
 - lists currently configured portals in geonetwork
 
@@ -191,6 +196,10 @@ instead, amount of maps/contexts that the current user can access.
 ### `/map/<mapid>`
 - displays map details & current problems
 - links to the OGC layers used by the map
+
+### `/mviewer/<map config url>`
+- displays mviewer config details & current problems
+- links to the OGC layers used by the map for themes and backgrounds
 
 ### `/ctx/<mapid>`
 - displays ctx map details & current problems

@@ -3,11 +3,20 @@
 # vim: ts=4 sw=4 et
 
 from flask import Blueprint
-from flask import request, render_template, url_for, make_response, jsonify
+from flask import (
+    request,
+    render_template,
+    url_for,
+    make_response,
+    jsonify,
+    abort,
+    redirect,
+)
 from flask import current_app as app
 from geordash.api import geonetwork_subportals, get_res_details, geoserver_workspaces
 from geordash.checks.mapstore import get_all_res
 from geordash.decorators import is_superuser, check_role
+from geordash.utils import unmunge
 
 admin_bp = Blueprint(
     "admin", __name__, url_prefix="/admin", template_folder="templates"
@@ -131,4 +140,47 @@ def mapstore_contexts():
         "admin/mapstore/contexts.html",
         previous_resources_jobs=all_jobs_for_ms_ctxs,
         res=res,
+    )
+
+
+@admin_bp.route("/mviewer/forgetconfig/<string:url>")
+@check_role(role="SUPERUSER")
+def mviewer_forgetconfig(url: str):
+    """url: munged url"""
+    mviewer_configs = app.extensions["owscache"].get_mviewer_configs()
+    if not mviewer_configs:
+        return abort(404)
+    url = unmunge(url, False)
+    if url not in mviewer_configs:
+        return abort(404)
+    mviewer_configs.remove(url)
+    app.extensions["owscache"].set_mviewer_configs(mviewer_configs)
+    # XX flash something to the user ?
+    return redirect(url_for("dashboard.admin.mviewer_configs"))
+
+
+@admin_bp.route("/mviewer/configs")
+@check_role(role="USER")
+def mviewer_configs():
+    mviewer_configs = app.extensions["owscache"].get_mviewer_configs()
+    if mviewer_configs is None:
+        return abort(404)
+    confs = list()
+    for c in mviewer_configs:
+        murl = c.replace("/", "~")
+        confs.append(
+            {
+                "url": c,
+                "xurl": url_for("dashboard.mviewer", url=murl),
+                "forgeturl": f'<a class="fa" href="{ url_for("dashboard.admin.mviewer_forgetconfig", url=murl) }"><i class="bi bi-trash"></i></a>',
+                "viewurl": f'<a class="fa" href="https://geobretagne.fr/mviewer/?config={ c }">view map in mviewer</a>',
+            }
+        )
+    all_jobs_for_mv_configs = app.extensions["rcli"].get_taskids_by_taskname_and_args(
+        "geordash.checks.mviewer.check_all", []
+    )
+    return render_template(
+        "admin/mviewer/configs.html",
+        previous_resources_jobs=all_jobs_for_mv_configs,
+        confs=confs,
     )

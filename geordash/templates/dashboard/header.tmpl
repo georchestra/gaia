@@ -115,6 +115,14 @@ Non connecté
 {% endif %}
         </ul>
       </li>
+{% if has_mviewer and 'sec-roles' in request.headers and 'USER' in request.headers['sec-roles'] %}
+  {% set active = True if request.endpoint and request.endpoint == 'dashboard.admin.mviewer_configs' else False %}
+      <li class="nav-item navbar-text px-2">
+        <a class="nav-item{% if active %} active" aria-current="page{% endif %}"
+           href="{{ url_for('dashboard.admin.mviewer_configs') }}">Configs mviewer
+        </a>
+      </li>
+{% endif %}
     </ul>
   </div>
 </div>

@@ -20,14 +20,15 @@ $(document).ready(function(){
    <div class="container">
 <div>
 <h2>Check mapstore configs</h2>
+<p>Check <code>localConfig.json</code>, <code>new.json</code> and <code>config.json</code> for invalid/broken OGC services/missing layers.</p>
 <form id='check' action="javascript:CheckRes('mapstore', 'configs', {{ superuser|int }} );">
 <input type=submit value="check all mapstore configs now">
 </form>
 <h4 id='pbtitle'>Problems</h4>
-<div id='pbdetails'></div>
+<div id='pbdetails'>No group check has been run yet</div>
 <div id="problems"></div>
 <h4 id='previous'>Previous</h4>
-<p id='previouslist'></p>
+<p id='previouslist'>No previous group check result has been found</p>
 </div>
    </div>
         {% endblock %}

@@ -1,0 +1,73 @@
+{% set title = 'All Mviewer configs' %}
+{% include 'header.tmpl' %}
+
+        {% block scripts %}
+<script>
+let prev = {{ previous_resources_jobs | tojson() }};
+let tableData = {{ confs | tojson }};
+if (prev && Array.isArray(prev) && prev.length > 0) {
+  const last = prev.reduce((a, b) => {
+    return new Date(a['finished']) > new Date(b['finished']) ? a : b;
+  });
+  PollTaskRes('mviewer', 'configs', last['id'], {{ superuser|int }}, '#pbtitle');
+}
+
+$(document).ready(function(){
+  DisplayPrev('mviewer', 'configs', prev, {{ superuser|int }}, '#previouslist');
+{% if confs | length > 0 %}
+  $('#configstable').bootstrapTable({
+    data: tableData,
+    columns: [
+      {'field': 'url', 'sortable': true, 'title': "Config url", 'formatter': 'urlFormatter'},
+      {'field': 'forgeturl', 'title': 'Forget'},
+      {'field': 'viewurl', 'title': 'View'}
+    ]
+  });
+{% else %}
+  $('#go').attr('disabled', true);
+{% endif %}
+});
+
+/* horrible function constructing the redirect to the mviewer details page for the entered url */
+function GoToUrl() {
+  const baseurl = "{{ url_for('dashboard.mviewer', url='replacethis') }}".replace('replacethis','');
+  const configPath = document.getElementById('new_config').value.replaceAll('/','~');
+  window.location = baseurl + configPath;
+};
+</script>
+        {% endblock %}
+        <!-- Your page content -->
+        {% block content %}
+   <div class="container">
+<p id='details'>Details pour toutes les configurations mviewer</p>
+<div>
+<h2>Check mviewer configs</h2>
+<p>check all mviewer configs.</p>
+<form id='check' action="javascript:CheckRes('mviewer', 'configs', {{ superuser|int}} );">
+<input id='go' type=submit value="check all mviewer configs now">
+</form>
+<h4 id='pbtitle'>Problems</h4>
+<div id='pbdetails'>No group check has been run yet</div>
+<div id="problems"></div>
+<h4 id='previous'>Previous</h4>
+<p id='previouslist'>No previous group check result has been found</p>
+</div>
+{% if confs | length > 0 %}
+<h2 id='mapstitle'>Configs</h2>
+<table id="configstable"
+  data-sort-name="url"
+  data-pagination="true"
+  data-toggle="true"
+  data-search="true">
+</table>
+{% else %}
+<p>No configs to check found.. you might want to add some just below ?</p>
+{% endif %}
+<form id='add' action="#">
+<label for="new_config">Config url:</label>
+<input id="new_config" type='url' required placeholder="https://url/to/config.xml"/>
+<input id='addnew' type=button value="show details for the config at this url" onclick="javascript:GoToUrl()">
+</form>
+        {% endblock %}
+</body>
+</html>

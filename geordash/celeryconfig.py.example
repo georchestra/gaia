@@ -5,7 +5,12 @@ broker_url = url
 result_backend = url
 worker_concurrency = 1
 # autoscale = 8,1
-imports = ("geordash.checks.mapstore", "geordash.checks.ows", "geordash.checks.csw")
+imports = (
+    "geordash.checks.mapstore",
+    "geordash.checks.ows",
+    "geordash.checks.csw",
+    "geordash.checks.mviewer",
+)
 # worker_pool = solo
 worker_log_format = (
     "[%(asctime)s: %(levelname)s/%(processName)s/%(threadName)s] WORKER %(message)s"
@@ -52,6 +57,11 @@ beat_schedule = {
         "args": ["/geonetwork/srv/fre/csw"],
         "schedule": crontab(minute=45, hour=0),
     },
+    # "check-all-mviewer": {
+    #    "task": "geordash.checks.mviewer.check_all",
+    #    "args": [],
+    #    "schedule": crontab(minute=0, hour=1),
+    # },
 }
 # otherwise scheduled hours is taken as UTC
 timezone = "Europe/Paris"

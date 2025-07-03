@@ -44,7 +44,7 @@ $(document).ready(function(){
 <p>Note: les métadonnées non publiques et externes/moissonnées ne sont pas incluses. Les informations fournies sur cette page proviennent d'une requête CSW.</p>
 {% endif %}
 <h2 id='pbtitle'>Problems</h2>
-<div id='pbdetails'>No check have been run yet !</div>
+<div id='pbdetails'>No group check has been run yet</div>
 <div id="problems"></div>
 <form id='check' action="javascript:CheckRes('cswservice', '{{ url }}', {{ superuser|int }});">
 <input type=submit value="check all metadatas now">
@@ -62,7 +62,7 @@ $(document).ready(function(){
 <div id="progress"></div>
 {% endif %}
 <h2 id='previous'>Previous</h2>
-<p id='previouslist'></p>
+<p id='previouslist'>No previous group check result has been found</p>
 </div>
 	{% endblock content %}
     </body>

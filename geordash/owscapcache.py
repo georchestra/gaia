@@ -289,3 +289,14 @@ class OwsCapCache:
         else:
             get_logger("OwsCapCache").debug(f"{rkey} not found in capabilities cache ?")
             return 0
+
+    def get_mviewer_configs(self):
+        re = self.rediscli.get("mviewer_configs")
+        if re:
+            return jsonpickle.decode(json.loads(re.decode("utf-8")))
+        else:
+            return None
+
+    def set_mviewer_configs(self, confs):
+        json_entry = json.dumps(jsonpickle.encode(confs))
+        return self.rediscli.set("mviewer_configs", json_entry)

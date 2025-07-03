@@ -1,0 +1,100 @@
+{% set title = 'mviewer ' ~  url ~ ' - ' ~ details.title %}
+{% include 'header.tmpl' %}
+
+        {% block scripts %}
+<script>
+let prev = {{ previous_jobs | tojson() }};
+if (prev && Array.isArray(prev) && prev.length > 0) {
+  const last = prev.reduce((a, b) => {
+    return new Date(a['finished']) > new Date(b['finished']) ? a : b;
+  });
+  PollTaskRes('mviewer', '{{ url }}', last['id'], {{ superuser|int }});
+}
+
+$(document).ready(function(){
+  DisplayPrev('mviewer', '{{ url }}', prev, {{ superuser|int }});
+});
+</script>
+        {% endblock scripts %}
+        <!-- Your page content -->
+        {% block content %}
+<div class="container">
+{% set rurl = url.replace('~','/') %}
+<p id='details'>Details pour la carte mviewer <a href="{{ rurl }}">{{ rurl }}</a> (<a href="https://geobretagne.fr/mviewer/?config={{ rurl }}">voir dans le mviewer de geobretagne</a>), ayant pour titre {{ details.title }}</p>
+{% if details.dc is defined %}
+<ul>
+<li>Date: {{ details.dc.date }}</li>
+<li>Auteur: {{ details.dc.creator }}</li>
+{% if details.dc.subject is defined and details.dc.subject | length > 0 %}
+<li>
+Mots clefs:
+<ul>
+{% for s in details.dc.subject %}
+<li>{{ s }}</li>
+{% endfor %}
+</ul>
+</li>
+{% endif %}
+</ul>
+{% else %}
+Attention, il n'y a pas de section <code>&lt;metadata&gt;</code> ?
+{% endif %}
+<form id='check' action="javascript:CheckRes('mviewer', '{{ url }}', {{ superuser|int }});">
+<input type=submit value="check now">
+</form>
+<h2 id='pbtitle'>Problems</h2>
+<div id='pbdetails'>No check has been run yet</div>
+<div id="problems"></div>
+<h2 id='usetitle'>Contents</h2>
+<div id="uses">
+{% if details.baselayers | length > 0 %}
+la carte utilise les fonds suivants:
+<ul>
+{% for l in details.baselayers %}
+<li>
+'{{ l.title }}': couche {{ l.type }}
+<a href='{{ url_for('dashboard.owslayer', stype=l.type, url=l.url.replace('/', '~').split('?')[0], lname=l.name) }}'>{{ l.name }}</a>
+dans
+<a href='{{ url_for('dashboard.ows', stype=l.type, url=l.url.replace('/', '~')) }}'>{{ l.url }}</a></li>
+{% endfor %}
+</ul>
+{% else %}
+<p>la carte n'utilise aucune couche WMS/WFS/WMTS pour les fonds ?</p>
+{% endif %}
+{% if details.layers | length > 0 %}
+la carte utilise les couches OGC suivantes:
+<ul>
+{% for l in details.layers %}
+<li>
+'{{ l.title }}': couche {{ l.type }}
+<a href='{{ url_for('dashboard.owslayer', stype=l.type, url=l.url.replace('/', '~').split('?')[0], lname=l.name) }}'>{{ l.name }}</a>
+dans
+<a href='{{ url_for('dashboard.ows', stype=l.type, url=l.url.replace('/', '~')) }}'>{{ l.url }}</a>
+{% if l.templateurl is defined %}
+(url du template: {{ l.templateurl }})
+{% endif %}
+{% if l.styles | length > 0 %}
+{% if l.styles | length == 1 %}
+avec le style {{ l.styles[0] }}
+{% else %}
+avec les styles suivants:
+<ul>
+{% for s in l.styles %}
+<li>{{ s }}</li>
+{% endfor %}
+</ul>
+{% endif %}
+{% endif %}
+{% endfor %}
+</li>
+</ul>
+{% else %}
+<p>la carte n'utilise aucune couche WMS/WFS/WMTS/n'a que des fonds de carte configurés ?</p>
+{% endif %}
+</div>
+<h2 id='previous'>Previous</h2>
+<p id='previouslist'>No previous check result has been found</p>
+</div>
+	{% endblock content %}
+    </body>
+</html>

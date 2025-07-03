@@ -57,6 +57,7 @@ def create_app() -> Flask:
         return {
             "instancename": instancename,
             "superuser": is_superuser(),
+            "has_mviewer": app.extensions["owscache"].get_mviewer_configs() != None,
             "bootstrap": app.extensions["bootstrap"],
             "localgsbaseurl": app.extensions["conf"].get("localgs", "urls"),
             "localgnbaseurl": app.extensions["conf"].get("localgn", "urls"),

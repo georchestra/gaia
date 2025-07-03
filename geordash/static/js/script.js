@@ -235,6 +235,10 @@ const GetPbStr = (p) => {
       return `Metadata with uuid ${p.uuid} doesnt exist in CSW service at ${p.url}`
     case 'MdHasNoLinks':
       return `No links to OGC layers or download links ?`
+    case 'NoSuchSld':
+      return `Sld with url ${p.url} doesnt exist`
+    case 'NoSuchResource':
+      return `Resource '${p.restype}' with id '${p.resid}' doesnt exist`
     default:
       return `Unhandled error code ${p.type} for problem ${p}`
   }
@@ -330,6 +334,8 @@ const PollTaskRes = (type, resid, taskid, showdelete, targetdivid = '#pbtitle') 
                                 xurl = baseurl + '/context/' + j.args[1]
                               }
                               return {'url': `${j.args[0]} ${j.args[1]}`, 'xurl': xurl, 'problem': GetPbStr(i) }
+                            } else if (data['task'].includes('mviewer.check_all')) {
+                              return {'url': j.args[0].replaceAll('~','/'), 'xurl': baseurl + '/mviewer/' + j.args[0], 'problem': GetPbStr(i) }
                             } else {
                               // csw
                               if (data['task'].includes('csw') && j.args.length == 2) {
@@ -379,6 +385,8 @@ const PollTaskRes = (type, resid, taskid, showdelete, targetdivid = '#pbtitle') 
                           argtitle = 'Map/Ctxid'
                         } else if (data['task'].includes('check_configs')) {
                           argtitle = 'Configfile'
+                        } else if (data['task'].includes('mviewer.check_all')) {
+                          argtitle = 'Config url'
                         }
                         var prevexp = $(targetpbdivid + '-export')
                         if (prevexp.length > 0) {

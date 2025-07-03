@@ -4,6 +4,14 @@
 
 from flask import current_app as app
 from geordash.logwrap import get_logger
+from lxml import etree
+
+
+def getelemat(xml: etree._ElementTree, path: str, nsmap=None):
+    r = xml.xpath(path, namespaces=nsmap)
+    if len(r) > 0:
+        return r[0].text
+    return None
 
 
 def find_localmduuid(service, layername):
@@ -32,7 +40,7 @@ def find_localmduuid(service, layername):
     return localmduuids
 
 
-def unmunge(url):
+def unmunge(url, prunefqdn=True):
     """
     takes a munged url in the form ~geoserver(|~ws)~ows or http(s):~~fqdn~geoserver(|~ws)~ows
     returns: a proper url with slashes, eventually stripped of the local ids domainName (eg /geoserver/ws/ows)
@@ -41,8 +49,10 @@ def unmunge(url):
     if not url.startswith("/") and not url.startswith("http"):
         url = "/" + url
     localdomain = "https://" + app.extensions["conf"].get("domainName")
-    if url.startswith(localdomain):
+    if url.startswith(localdomain) and prunefqdn:
         url = url.removeprefix(localdomain)
+    if not url.startswith("http") and not url.startswith(localdomain) and not prunefqdn:
+        url = localdomain + url
     return url
 
 
