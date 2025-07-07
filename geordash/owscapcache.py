@@ -23,6 +23,8 @@ import traceback
 import requests
 
 from geordash.logwrap import get_logger
+from gsdscanner import GSDatadirScanner
+from geordash.utils import find_geoserver_datadir
 
 non_harvested = PropertyIsEqualTo("isHarvested", "false")
 
@@ -300,3 +302,29 @@ class OwsCapCache:
     def set_mviewer_configs(self, confs):
         json_entry = json.dumps(jsonpickle.encode(confs))
         return self.rediscli.set("mviewer_configs", json_entry)
+
+    def get_geoserver_datadir_view(self, defpath=None):
+        """check in local memory if we have a GSDatadirScanner object,
+        if not, check in redis. If not found in redis, create one (async?)
+        """
+        if "geoserver_datadir" not in self.services:
+            # XX put path and hostname in rkey ?
+            rkey = "geoserver_datadir"
+            re = self.rediscli.get(rkey)
+            if re:
+                gsdd = jsonpickle.decode(json.loads(re.decode("utf-8")))
+            else:
+                try:
+                    gsdd = GSDatadirScanner(find_geoserver_datadir(defpath))
+                    # TODO: compare datadir versions
+                    gsdd.parseAll()
+                except:
+                    # XXX return proper error ?
+                    return None
+                else:
+                    # push to redis
+                    json_entry = json.dumps(jsonpickle.encode(gsdd))
+                    self.rediscli.set(rkey, json_entry)
+            # update local version
+            self.services["geoserver_datadir"] = gsdd
+        return self.services["geoserver_datadir"]
