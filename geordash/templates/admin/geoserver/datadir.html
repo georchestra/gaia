@@ -1,0 +1,32 @@
+{% set title = 'datadir geoserver' %}
+{% include 'header.tmpl' %}
+
+        {% block scripts %}
+<script>
+$(document).ready(function(){
+{% if not gsd.parsed %}
+  ParseGSDD();
+{% endif %}
+});
+</script>
+        {% endblock scripts %}
+{% block content %}
+ <div class="container">
+<h1>Datadir Geoserver</h1>
+
+détails pour le datadir situé dans <code>{{ gsd.basepath }}</code>, version <code>{{ gsd.version }}</code>, url pour proxybase <code>{{ gsd.pburl }}</code>.
+
+{% if gsd.parsed %}
+<ul>
+{% for k in gsd.collections.keys() %}
+<li><a href='{{ url_for('dashboard.admin.geoserver_datadir_collection', colltype=k) }}'>{{ gsd.collections[k].len() }} entries for {{ k }}</li>
+{% endfor %}
+</ul>
+{% else %}
+<h2 id='parsing'>Parsing datadir in a background task..</h2>
+<div id="progress"></div>
+{% endif %}
+</div>
+{% endblock %}
+</body>
+</html>
