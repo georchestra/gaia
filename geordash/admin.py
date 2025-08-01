@@ -71,6 +71,59 @@ def geoserver():
     return render_template("admin/geoserver.html", workspaces=workspaces)
 
 
+@admin_bp.route("/geoserver/datadir")
+@check_role(role="ADMINISTRATOR")
+def geoserver_datadir():
+    gsd = app.extensions["owscache"].get_geoserver_datadir_view()
+    return render_template("admin/geoserver/datadir.html", gsd=gsd)
+
+
+@admin_bp.route("/geoserver/datadir/<colltype>")
+@check_role(role="ADMINISTRATOR")
+def geoserver_datadir_collection(colltype: str):
+    gsd = app.extensions["owscache"].get_geoserver_datadir_view()
+    items = gsd.collections[colltype].coll
+    out = list()
+    for o in items.values():
+        c = dict()
+        c["url"] = o.id
+        c["xurl"] = url_for(
+            "dashboard.admin.geoserver_datadir_collobj",
+            colltype=colltype[:-1],
+            collobj=o.id,
+        )
+        if not hasattr(o, "name"):
+            # special ugly case for Raster/VectorData which have no 'name' attribute per se
+            c["name"] = o.file
+        else:
+            c["name"] = o.name
+        out.append(c)
+    return render_template(
+        "admin/geoserver/collection.html",
+        coll=out,
+        colltype=colltype,
+    )
+
+
+@admin_bp.route("/geoserver/datadir/<colltype>/<collobj>")
+@check_role(role="ADMINISTRATOR")
+def geoserver_datadir_collobj(colltype: str, collobj: str):
+    gsd = app.extensions["owscache"].get_geoserver_datadir_view()
+    items = gsd.collections[colltype + "s"].coll
+    obj = items.get(collobj)
+    if obj is not None:
+        return make_response(obj.__repr__(), 200)
+    else:
+        return make_response(
+            jsonify(
+                {
+                    "error": f"an error occured when fetching {colltype}: no value for {collobj}"
+                }
+            ),
+            404,
+        )
+
+
 @admin_bp.route("/mapstore/maps")
 @check_role(role="MAPSTORE_ADMIN")
 def mapstore_maps():

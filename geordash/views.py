@@ -13,6 +13,7 @@ import requests
 from geordash.utils import unmunge
 from geordash.checks.mapstore import check_res, check_configs, check_resources
 from geordash.tasks.fetch_csw import get_records
+from geordash.tasks.gsdatadir import parse_gsdatadir
 import geordash.checks.ows
 import geordash.checks.csw
 import geordash.checks.mviewer
@@ -128,16 +129,21 @@ def forgetogc(stype, url):
     return {"deleted": n}
 
 
+@tasks_bp.get("/parsegsd.json")
+def start_parse_gsd():
+    result = parse_gsdatadir.delay()
+    return {"taskid": result.id}
+
 @tasks_bp.get("/fetchcswrecords/<string:portal>.json")
 def start_fetch_csw(portal: str):
     result = get_records.delay(portal)
     return {"taskid": result.id}
 
 
-@tasks_bp.get("/fetchcswresults/<string:taskid>")
-def get_csw_records_progress(taskid: str):
+@tasks_bp.get("/taskresults/<string:taskid>")
+def get_task_result(taskid: str):
     """
-    taskid should be the task id for a get_records task
+    taskid should be the task id for a get_records or parse_gsdatadir task
     if given a garbage id, celery returns a None result and state=PENDING ?
     but how should one differentiate that from a really PENDING task ?
     """

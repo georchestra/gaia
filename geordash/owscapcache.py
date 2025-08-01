@@ -23,6 +23,8 @@ import traceback
 import requests
 
 from geordash.logwrap import get_logger
+import gsdscanner
+from geordash.utils import find_geoserver_datadir
 
 non_harvested = PropertyIsEqualTo("isHarvested", "false")
 
@@ -300,3 +302,37 @@ class OwsCapCache:
     def set_mviewer_configs(self, confs):
         json_entry = json.dumps(jsonpickle.encode(confs))
         return self.rediscli.set("mviewer_configs", json_entry)
+
+    def get_geoserver_datadir_view(self, parse_now=False, defpath=None):
+        """check in local memory if we have a GSDatadirScanner object,
+        if not, check in redis. If not found in redis, create one.
+        """
+        # XX put path and hostname in rkey ?
+        rkey = "geoserver_datadir"
+        # will parse global.xml to have the datadir version (should be _latest_)
+        gsdd = gsdscanner.GSDatadirScanner(find_geoserver_datadir(defpath))
+        if rkey not in self.services:
+            re = self.rediscli.get(rkey)
+            if re:
+                cached_gsdd = jsonpickle.decode(json.loads(re.decode("utf-8")))
+                if cached_gsdd.version >= gsdd.version:
+                    # update in-memory cache, this one is parsed
+                    self.services[rkey] = cached_gsdd
+                    return self.services[rkey]
+        else:
+            # check if current is newer than the one cached in memory
+            if self.services[rkey].version >= gsdd.version:
+                return self.services[rkey]
+
+        if parse_now:
+            gsdd.parseAll()
+            self.update_geoserver_datadir_view(gsdd)
+        # returns an unparsed one if parse_now was False
+        return gsdd
+
+    def update_geoserver_datadir_view(self, gsdd):
+        rkey = "geoserver_datadir"
+        json_entry = json.dumps(jsonpickle.encode(gsdd))
+        self.rediscli.set(rkey, json_entry)
+        # update local version
+        self.services[rkey] = gsdd

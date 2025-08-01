@@ -103,6 +103,7 @@ Non connecté
 {% if superuser %}
           <li><hr class="dropdown-divider"></li>
           {{ render_dropdown_item('dashboard.admin.geoserver', 'Liste des workspaces') }}
+          {{ render_dropdown_item('dashboard.admin.geoserver_datadir', 'Contenu du datadir') }}
 {% endif %}
         </ul>
       </li>

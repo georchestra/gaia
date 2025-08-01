@@ -259,6 +259,38 @@ const DeleteTask = (taskid) => {
     });
 }
 
+const ParseGSDD = () => {
+  const targetdivid = '#progress';
+  fetch(baseurl + '/tasks/parsegsd.json')
+    .then(response => response.json())
+    .then(mydata => {
+      $(targetdivid).text("Queuing background task..");
+      const poll = () => {
+        fetch(baseurl + '/tasks/taskresults/' + mydata["taskid"])
+          .then(response => response.json())
+          .then(data => {
+            console.log(data)
+            if (data === null) {
+              $(targetdivid).text('got null, shouldnt happen ?');
+            } else if (!data["state"] || data["state"] == 'FAILURE') {
+              $(targetdivid).text("Protch ! Check browser console");
+              console.error(data)
+            } else if(data["state"] == 'PENDING' || data["state"] == 'STARTED') {
+              $(targetdivid).text("waiting..");
+              setTimeout(poll, 1000)
+            } else if(data["state"] == 'PROGRESS') {
+              $(targetdivid).text("parsed " + data["completed"]["current"] + ' over ' + data["completed"]["total"] + ' categories');
+              setTimeout(poll, 1000)
+            } else if(data["state"] == 'SUCCESS') {
+              $(targetdivid).text("parsed " + data["completed"] + " items, reloading page");
+              window.location.reload();
+            }
+          })
+      }
+      poll();
+    });
+}
+
 const FetchCswRecords = (portal) => {
   const targetdivid = '#progress';
   fetch(baseurl + '/tasks/fetchcswrecords/' + portal + '.json')
@@ -266,7 +298,7 @@ const FetchCswRecords = (portal) => {
     .then(mydata => {
       $(targetdivid).text("Queuing background task..");
       const poll = () => {
-        fetch(baseurl + '/tasks/fetchcswresults/' + mydata["taskid"])
+        fetch(baseurl + '/tasks/taskresults/' + mydata["taskid"])
           .then(response => response.json())
           .then(data => {
 //            console.log(data)
