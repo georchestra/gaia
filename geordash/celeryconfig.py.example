@@ -54,7 +54,6 @@ beat_schedule = {
     },
     "check-gn-metadatadir-every-night": {
     "task": "geordash.checks.gn_datadir.check_gn_meta",
-    "args": [""],
     "schedule": crontab(minute=55, hour=0),
 },
 }
