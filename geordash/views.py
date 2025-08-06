@@ -320,3 +320,10 @@ def check_cswservice(url):
             "geordash.checks.csw.check_catalog", [url], groupresult.id
         )
     return {"result_id": groupresult.id}
+
+@tasks_bp.route("/check/gndatadir/result.json")
+def check_gndatadir():
+    # metalist = geordash.checks.gn_datadir.check_gn_meta()
+    # return {"result_id": metalist}
+    result = geordash.checks.gn_datadir.check_gn_meta.delay()
+    return {"result_id": result.id}
