@@ -2,6 +2,17 @@
 # -*- coding: utf-8 -*-
 # vim: ts=4 sw=4 et
 
+import requests
+from requests.exceptions import ReadTimeout
+
+from celery import shared_task
+from celery import Task
+from celery import group
+
+from flask import current_app as app
+from geordash.utils import find_localmduuid, unmunge, objtype
+from geordash.logwrap import get_logger
+
 from sqlalchemy import create_engine, MetaData, select, Column, String, Integer, Text
 from sqlalchemy.dialects.postgresql import array
 from sqlalchemy.engine import URL
@@ -11,7 +22,6 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 import glob
 from pathlib import Path
-from flask import current_app as app
 
 Base = declarative_base()
 
@@ -101,7 +111,7 @@ def name_for_collection_relationship(base, local_cls, referred_cls, constraint):
 
 class GeonetworkDatadirChecker:
     def __init__(self, conf):
-        url = URL.create(
+        self.url = URL.create(
             drivername="postgresql",
             username=conf.get("pgsqlUser"),
             host=conf.get("pgsqlHost"),
@@ -109,8 +119,10 @@ class GeonetworkDatadirChecker:
             password=conf.get("pgsqlPassword"),
             database=conf.get("pgsqlDatabase"),
         )
-
-        engine = create_engine(url)
+    def connectdb(self):
+        engine = create_engine(self.url)
+        self.sessionm = sessionmaker(bind=engine)
+        self.sessiono = self.sessionm()
 
         # Perform database reflection to analyze tables and relationships
         m = MetaData(schema=conf.get("geonetworkSchema"))
@@ -119,38 +131,8 @@ class GeonetworkDatadirChecker:
             autoload_with=engine,
             name_for_collection_relationship=name_for_collection_relationship,
         )
-
-        self.sessionm = sessionmaker(bind=engine)
-        self.sessiono = self.sessionm()
-
-        self.gnmetadatas = self.session().query(Metadata).all()
-        # self.gnmetadatas.sort(key=lambda x: x.id)
-        self.meta = []
-        for foldermeta in glob.glob("/mnt/geonetwork_datadir/data/metadata_data/*/*"):
-            idmeta = foldermeta.split("/")[-1]
-            existing_index = 0
-            for (index, item) in enumerate(self.gnmetadatas):
-                if item.id == int(idmeta):
-                    existing_index =index
-                    break
-            if existing_index:
-                continue
-            else:
-                # append useless folder
-                self.meta.append(foldermeta)
-
-    def get_metauseless_list(self):
-        return self.meta
-
-    def all_process_size(self):
-        total_could_be_deleted = 0
-        for path in self.meta:
-            total_could_be_deleted += get_folder_size(path)
-        return "In total " + str(total_could_be_deleted) + " on "+ str(get_folder_size("/mnt/geonetwork_datdadir")) +" bytes could be deleted"
-
-    
-    def process_size(self, path):
-        return get_folder_size(path)
+    def request_metadata(self):
+        return self.session().query(Metadata).all()
 
     def session(self):
         try:
@@ -159,6 +141,61 @@ class GeonetworkDatadirChecker:
             print("Reconnecting to the database...")
             self.sessiono = self.sessionm()
         return self.sessiono
+    def closedb(self):
+        self.sessiono.close()
+        self.sessionm.close_all()
+
+def all_process_size(meta):
+    total_could_be_deleted = 0
+    for path in meta:
+        total_could_be_deleted += get_folder_size(path)
+    return "In total " + str(total_could_be_deleted) + " on "+ str(get_folder_size("/mnt/geonetwork_datdadir")) +" bytes could be deleted"
+
+def process_size(path):
+    return get_folder_size(path)
+
+def session(sessiono, sessionm):
+    try:
+        sessiono.execute(select(1))
+    except OperationalError:
+        print("Reconnecting to the database...")
+        sessiono = sessionm()
+    return sessiono
+
+@shared_task()
+def check_gn_meta():
+    get_logger("CheckGNDatadir").debug("Start gn datadir checker")
+    geonetworkdatadirchecker = app.extensions["gndc"]
+    geonetworkdatadirchecker.connectdb()
+
+    gnmetadatas = geonetworkdatadirchecker.request_metadata()
+    # self.gnmetadatas.sort(key=lambda x: x.id)
+    get_logger("CheckGNDatadir").debug("pouet1")
+    meta = []
+    total_could_be_deleted = 0
+    for foldermeta in glob.glob("/mnt/geonetwork_datadir/data/metadata_data/*/*"):
+        idmeta = foldermeta.split("/")[-1]
+        get_logger("CheckGNDatadir").debug("pouet "+foldermeta)
+        existing_index = 0
+
+        for (index, item) in enumerate(gnmetadatas):
+            if item.id == int(idmeta):
+                existing_index = index
+                break
+        if existing_index:
+            continue
+        else:
+            # append useless folder
+            meta.append([foldermeta, str(get_folder_size(foldermeta))])
+            total_could_be_deleted+=get_folder_size(foldermeta)
+            get_logger("CheckGNDatadir").debug("pouet aie aie aie")
+    geonetworkdatadirchecker.closedb()
+    get_logger("CheckGNDatadir").debug("finish gn datadir checker")
+    if not len(meta):
+        meta.append("No result")
+    else:
+        meta.append(["Total",str(total_could_be_deleted)])
+    return meta
 
 
 # GeonetworkDatadirChecker(conf)
