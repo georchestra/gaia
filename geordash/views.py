@@ -12,6 +12,7 @@ import requests
 
 from geordash.utils import unmunge
 from geordash.checks.mapstore import check_res, check_configs, check_resources
+from geordash.checks.gn_datadir import check_gn_meta
 from geordash.tasks.fetch_csw import get_records
 from geordash.tasks.gsdatadir import parse_gsdatadir
 import geordash.checks.ows
@@ -325,5 +326,9 @@ def check_cswservice(url):
 def check_gndatadir():
     # metalist = geordash.checks.gn_datadir.check_gn_meta()
     # return {"result_id": metalist}
-    result = geordash.checks.gn_datadir.check_gn_meta.delay()
+
+    # app.extensions["gndc"].refresh_meta_list()
+
+    result = check_gn_meta.delay()
+
     return {"result_id": result.id}
