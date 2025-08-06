@@ -52,6 +52,11 @@ beat_schedule = {
         "args": ["/geonetwork/srv/fre/csw"],
         "schedule": crontab(minute=45, hour=0),
     },
+    "check-gn-metadatadir-every-night": {
+    "task": "geordash.checks.gn_datadir.check_gn_meta",
+    "args": [""],
+    "schedule": crontab(minute=55, hour=0),
+},
 }
 # otherwise scheduled hours is taken as UTC
 timezone = "Europe/Paris"
