@@ -53,26 +53,16 @@ beat_schedule = {
         "args": ("wfs", "/geoserver/ows"),
         "schedule": crontab(minute=30, hour=0),
     },
-    "check-gs-datadir-every-sunday": {
-        "task": "geordash.checks.gsd.gsdatadir",
-        "args": [],
-        "schedule": crontab(day_of_week='sunday',minute=30, hour=1),
-    },
     "check-gn-metadatas-every-night": {
         "task": "geordash.checks.csw.check_catalog",
         "args": ["/geonetwork/srv/fre/csw"],
         "schedule": crontab(minute=45, hour=0),
     },
-    # "check-all-mviewer": {
-    #    "task": "geordash.checks.mviewer.check_all",
-    #    "args": [],
-    #    "schedule": crontab(minute=0, hour=1),
-    # },
     "check-gn-metadatadir-every-night": {
-         "task": "geordash.checks.gn_datadir.check_gn_meta",
-         "args": [""],
-         "schedule": crontab(minute=55, hour=0),
-     },
+    "task": "geordash.checks.gn_datadir.check_gn_meta",
+    "args": [""],
+    "schedule": crontab(minute=55, hour=0),
+},
 }
 # otherwise scheduled hours is taken as UTC
 timezone = "Europe/Paris"
