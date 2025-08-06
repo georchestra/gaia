@@ -66,6 +66,10 @@ def get_rescontent_from_resid(restype, resid):
 def home():
     return render_template("home.html")
 
+@dash_bp.route("/debug")
+def debug():
+    # app.logger.error(app.extensions["conf"])
+    return app.extensions["conf"].tostr()
 
 @dash_bp.route("/my-metadata")
 @check_role(role="GN_EDITOR")
