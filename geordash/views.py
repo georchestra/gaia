@@ -13,9 +13,11 @@ import requests
 from geordash.utils import unmunge
 from geordash.checks.mapstore import check_res, check_configs, check_resources
 from geordash.tasks.fetch_csw import get_records
+from geordash.tasks.gsdatadir import parse_gsdatadir
 import geordash.checks.ows
 import geordash.checks.csw
 import geordash.checks.mviewer
+import geordash.checks.gsd
 from geordash.decorators import check_role
 
 tasks_bp = Blueprint("tasks", __name__, url_prefix="/tasks")
@@ -37,6 +39,7 @@ def result(id: str) -> dict[str, object]:
             "geordash.checks.mviewer.check_all",
             "geordash.checks.ows.owsservice",
             "geordash.checks.csw.check_catalog",
+            "geordash.checks.gsd.gsdatadir",
         ):
             #            print(f"real taskset id is {result.result[0][0]}")
             result = GroupResult.restore(result.result[0][0])
@@ -128,16 +131,22 @@ def forgetogc(stype, url):
     return {"deleted": n}
 
 
+@tasks_bp.get("/parsegsd.json")
+def start_parse_gsd():
+    result = parse_gsdatadir.delay()
+    return {"taskid": result.id}
+
+
 @tasks_bp.get("/fetchcswrecords/<string:portal>.json")
 def start_fetch_csw(portal: str):
     result = get_records.delay(portal)
     return {"taskid": result.id}
 
 
-@tasks_bp.get("/fetchcswresults/<string:taskid>")
-def get_csw_records_progress(taskid: str):
+@tasks_bp.get("/taskresults/<string:taskid>")
+def get_task_result(taskid: str):
     """
-    taskid should be the task id for a get_records task
+    taskid should be the task id for a get_records or parse_gsdatadir task
     if given a garbage id, celery returns a None result and state=PENDING ?
     but how should one differentiate that from a really PENDING task ?
     """
@@ -215,6 +224,28 @@ def check_mviewer(url):
     result = geordash.checks.mviewer.check_mviewer.delay(url)
     return {"result_id": result.id}
 
+
+@tasks_bp.route("/check/geoserver/datadir.json")
+def check_geoserver_datadir():
+    groupresult = geordash.checks.gsd.gsdatadir()
+    if groupresult.id:
+        app.extensions["rcli"].add_taskid_for_taskname_and_args(
+            "geordash.checks.gsd.gsdatadir", [], groupresult.id
+        )
+    return {"result_id": groupresult.id}
+
+@tasks_bp.route("/check/geoserver/datadir/<string:colltype>/<string:itemid>.json")
+def check_geoserver_datadir_item(colltype, itemid):
+    gsd = app.extensions["owscache"].get_geoserver_datadir_view()
+    ctype = f"{colltype}s"
+    if gsd is None:
+        return abort(404)
+    if ctype not in gsd.available_keys:
+        return abort(404)
+    if gsd.collections[ctype].coll.get(itemid) is None:
+        return abort(404)
+    result = geordash.checks.gsd.gsdatadir_item.delay(ctype, itemid, None)
+    return {"result_id": result.id}
 
 @tasks_bp.route("/check/ows/<string:stype>/<string:url>/<string:lname>.json")
 def check_owslayer(stype, url, lname):

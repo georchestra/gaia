@@ -5,6 +5,8 @@
 from flask import current_app as app
 from geordash.logwrap import get_logger
 from lxml import etree
+import psutil
+import os
 
 
 def getelemat(xml: etree._ElementTree, path: str, nsmap=None):
@@ -12,6 +14,104 @@ def getelemat(xml: etree._ElementTree, path: str, nsmap=None):
     if len(r) > 0:
         return r[0].text
     return None
+
+
+def getelemsat(xml: etree._ElementTree, path: str, nsmap=None) -> list:
+    r = xml.xpath(path, namespaces=nsmap)
+    if len(r) > 0:
+        ret = list()
+        for e in r:
+            ret.append(e.text)
+        return ret
+    return None
+
+
+def find_tomcat_geoserver_jdbc_resources():
+    """try hard to find the path of the geoserver's tomcat server.xml
+    iterate of the list of processes, and try to find one which has:
+    - java for the process name
+    - catalina.base in its args
+    when found, read the l/p for each jdbc resource
+    """
+    catalinabase = None
+    for proc in psutil.process_iter():
+        try:
+            pinfo = proc.as_dict(attrs=["name", "cmdline", "environ"])
+            if pinfo["name"] == "java":
+                for a in pinfo["cmdline"]:
+                    if "-Dcatalina.base=" in a:
+                        catalinabase = a.split("=")[1]
+                if "CATALINA_BASE" in pinfo["environ"]:
+                    catalinabase = pinfo["environ"]["CATALINA_BASE"]
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            pass
+    if catalinabase is None:
+        path = "/srv/tomcat/geoserver/conf/server.xml"
+    else:
+        path = f"{catalinabase}/conf/server.xml"
+    # check for file existence, without checking if we can actually read it
+    if not os.access(path, os.F_OK):
+        get_logger("Utils").error(
+            f"{path} not found, dunno where to look for jdbc resources"
+        )
+        return None
+    try:
+        fp = open(path)
+    except PermissionError:
+        get_logger("Utils").error(f"cant read {path}, not the right group/modes ?")
+        return None
+    else:
+        ret = dict()
+        with fp:
+            xml = etree.parse(fp)
+            r = xml.xpath(
+                "/Server/GlobalNamingResources/Resource[@type='javax.sql.DataSource' and @driverClassName='org.postgresql.Driver']"
+            )
+            if len(r) > 0:
+                for e in r:
+                    # parses jdbc:postgresql://host:port/database?properties
+                    url = e.get("url")
+                    parts = url.split("/")
+                    if ":" in parts[2]:
+                        p = parts[2].split(":")
+                        host = p[0]
+                        port = p[1]
+                    else:
+                        host = parts[2]
+                        port = 5432
+                    ret[e.get("name")] = {
+                        "username": e.get("username"),
+                        "password": e.get("password"),
+                        "database": parts[3].split("?")[0],
+                        "host": host,
+                        "port": port,
+                    }
+        return ret
+
+
+def find_geoserver_datadir(default):
+    """try hard to find the path of the geoserver datadir
+    iterate of the list of processes, and try to find one which has:
+    - java for the process name
+    - either:
+      - -DGEOSERVER_DATA_DIR in its commandline
+      - or GEOSERVER_DATA_DIR in its environment
+    if not found and the fallback path given was None, return the default value for ansible deployments
+    """
+    for proc in psutil.process_iter():
+        try:
+            pinfo = proc.as_dict(attrs=["name", "cmdline", "environ"])
+            if pinfo["name"] == "java":
+                for a in pinfo["cmdline"]:
+                    if "-DGEOSERVER_DATA_DIR=" in a:
+                        return a.split("=")[1]
+                if "GEOSERVER_DATA_DIR" in pinfo["environ"]:
+                    return pinfo["environ"]["GEOSERVER_DATA_DIR"]
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            pass
+    if default is None:
+        default = "/srv/data/geoserver"
+    return default
 
 
 def find_localmduuid(service, layername):

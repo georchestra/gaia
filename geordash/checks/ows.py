@@ -71,6 +71,7 @@ def reduced_bbox(bbox):
 def owsservice(stype, url):
     service = app.extensions["owscache"].get(stype, url, True)
     if service.s is None:
+        get_logger("CheckOws").error(f"Found no cache entry for {stype} at {url}")
         return False
     taskslist = list()
     for lname in service.contents():
@@ -98,6 +99,7 @@ def owslayer(stype, url, layername, single=False):
     url = unmunge(url)
     service = app.extensions["owscache"].get(stype, url, single)
     if service.s is None:
+        get_logger("CheckOws").error(f"Found no cache entry for {stype} at {url}")
         return False
     l = service.contents()[layername]
     if hasattr(l, "metadataUrls"):

@@ -1,0 +1,129 @@
+{% set title = colltype ~ '-' ~ key %}
+{% include 'header.tmpl' %}
+
+        {% block scripts %}
+<script>
+let prev = {{ previous_jobs | tojson() }};
+if (prev && Array.isArray(prev) && prev.length > 0) {
+  const last = prev.reduce((a, b) => {
+    return new Date(a['finished']) > new Date(b['finished']) ? a : b;
+  });
+  PollTaskRes('geoserver/datadir/{{ colltype }}', '{{ key }}', last['id'], {{ superuser|int }});
+}
+
+$(document).ready(function(){
+  DisplayPrev('geoserver/datadir/{{ colltype }}', '{{ key }}', prev, {{ superuser|int }});
+});
+</script>
+        {% endblock scripts %}
+        <!-- Your page content -->
+        {% block content %}
+<div class="container">
+<p id='details'>Details pour le {{ colltype }} '{{ key }}' dans <a href='{{ url_for('dashboard.admin.geoserver_datadir') }}'>le datadir geoserver</a></p>
+<ul>
+{% if obj.name %}
+<li>nom: {{ obj.name }}</li>
+{% endif %}
+{% if obj.file %}
+<li>file: {{ obj.file }}</li>
+{% endif %}
+{% if obj.title %}
+<li>titre: {{ obj.title }}</li>
+{% endif %}
+{% if obj.nativename %}
+<li>nom de couche: {{ obj.nativename }}</li>
+{% endif %}
+{% if colltype == 'datastore' %}
+<li><a href='/{{ localgsbaseurl }}/web/wicket/bookmarkable/org.geoserver.web.data.store.DataAccessEditPage?storeName={{ obj.name }}&wsName={{ wsname }}'>éditer dans geoserver</a></li>
+<li>type de datastore: {{ obj.type }}</li>
+{% if obj.dbtype %}
+<li>dbtype: {{ obj.dbtype }}</li>
+{% endif %}
+<li>connurl: {{ obj.connurl }}</li>
+{% if 'JNDI' in obj.type %}
+<li>schema: {{ obj.schema }}</li>
+{% if obj.tables %}
+<li>tables:<ul>
+{% for t in obj.tables %}
+<li>{{ t }}</li>
+{% endfor %}
+</ul></li>
+{% endif %}
+{% endif %}
+{% elif colltype == 'coveragestore' %}
+<li><a href='/{{ localgsbaseurl }}/web/wicket/bookmarkable/org.geoserver.web.data.store.CoverageStoreEditPage?storeName={{ obj.name }}&wsName={{ wsname }}'>éditer dans geoserver</a></li>
+<li>type de coveragestore: {{ obj.type }}</li>
+<li>path: {{ obj.url }}</li>
+{% elif colltype == 'layer' %}
+<li><a href='/{{ localgsbaseurl }}/web/wicket/bookmarkable/org.geoserver.web.data.resource.ResourceConfigurationPage?name={{ obj.name }}&wsName={{ wsname }}'>éditer dans geoserver</a></li>
+<li>type de couche: {{ obj.type }}</li>
+<li>publiée: {{ obj.advertised }}</li>
+<li>active: {{ obj.enabled }}</li>
+{% if obj.defaultstyleid %}
+<li>style par défaut: <a href='{{ url_for('dashboard.admin.geoserver_datadir_collobj',colltype='style',collobj=obj.defaultstyleid) }}'>{{ obj.defaultstyleid }}</a></li>
+{% endif %}
+{% if obj.styleids %}
+<li>autres styles:<ul>
+{% for s in obj.styleids %}
+<li><a href='{{ url_for('dashboard.admin.geoserver_datadir_collobj',colltype='style',collobj=s) }}'>{{ s }}</a></li>
+{% endfor %}
+</ul></li>
+{% endif %}
+{% elif colltype == 'rasterdata' %}
+<li>type de raster: {{ obj.type }}</li>
+{% elif colltype == 'vectordata' %}
+<li>type de vecteur: {{ obj.type }}</li>
+{% elif colltype == 'sld' %}
+<li>Titre de la première regle: {{ obj.firstrulename }}</li>
+{% elif colltype == 'style' %}
+{% if wsname %}
+<li><a href='/{{ localgsbaseurl }}/web/wicket/bookmarkable/org.geoserver.wms.web.data.StyleEditPage?name={{ obj.name }}&wsName={{ wsname }}'>éditer dans geoserver</a></li>
+{% else %}
+<li><a href='/{{ localgsbaseurl }}/web/wicket/bookmarkable/org.geoserver.wms.web.data.StyleEditPage?name={{ obj.name }}'>éditer dans geoserver</a></li>
+{% endif %}
+<li>format du style: {{ obj.format }}</li>
+{% set sk = obj.sldpath.replace('/','~') %}
+<li>sld: <a href='{{ url_for('dashboard.admin.geoserver_datadir_collobj',colltype='sld',collobj=sk) }}'>{{ sk }}</a></li>
+{% endif %}
+{% if obj.workspaceid %}
+<li>dans le workspace <a href='{{ url_for('dashboard.admin.geoserver_datadir_collobj',colltype='workspace',collobj=obj.workspaceid) }}'>{{ obj.workspaceid }}</a></li>
+{% endif %}
+{% if obj.datastoreid %}
+<li>dans le datastore <a href='{{ url_for('dashboard.admin.geoserver_datadir_collobj',colltype='datastore',collobj=obj.datastoreid) }}'>{{ obj.datastoreid }}</a></li>
+{% endif %}
+{% if obj.coveragestoreid %}
+<li>dans le coveragestore <a href='{{ url_for('dashboard.admin.geoserver_datadir_collobj',colltype='coveragestore',collobj=obj.coveragestoreid) }}'>{{ obj.coveragestoreid }}</a></li>
+{% endif %}
+{% if obj.namespaceid %}
+<!-- <li>dans le namespace <a href='{{ url_for('dashboard.admin.geoserver_datadir_collobj',colltype='namespace',collobj=obj.namespaceid) }}'>{{ obj.namespaceid }}</a></li> -->
+{% endif %}
+{% if obj.featuretypeid %}
+<li>dans le featuretype <a href='{{ url_for('dashboard.admin.geoserver_datadir_collobj',colltype='featuretype',collobj=obj.featuretypeid) }}'>{{ obj.featuretypeid }}</a></li>
+{% endif %}
+{% if obj.coverageid %}
+<li>dans le coverage <a href='{{ url_for('dashboard.admin.geoserver_datadir_collobj',colltype='coverage',collobj=obj.coverageid) }}'>{{ obj.coverageid }}</a></li>
+{% endif %}
+</ul>
+
+{% if obj.referenced_by %}
+<p>
+référencé par:
+<ul>
+{% for f in obj.referenced_by %}
+<li>le {{ f[0] }} <a href='{{ url_for('dashboard.admin.geoserver_datadir_collobj',colltype=f[0],collobj=f[1]) }}'>{{ f[1] }}</a></li>
+{% endfor %}
+</ul>
+</p>
+{% endif %}
+<form id='check' action="javascript:CheckRes('geoserver/datadir/{{ colltype }}', '{{ key }}', {{ superuser|int }});">
+<input type=submit value="check now">
+</form>
+<h2 id='pbtitle'>Problems</h2>
+<div id='pbdetails'>No check has been run yet</div>
+<div id="problems"></div>
+<h2 id='previous'>Previous</h2>
+<p id='previouslist'>No previous check result has been found</p>
+</div>
+	{% endblock content %}
+    </body>
+</html>

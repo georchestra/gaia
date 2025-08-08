@@ -17,6 +17,7 @@ from geordash.utils import unmunge, objtype
 def check_all():
     mviewer_configs = app.extensions["owscache"].get_mviewer_configs()
     if not mviewer_configs:
+        get_logger("CheckMviewer").info(f"No mviewer configs to check ?")
         return False
     taskslist = list()
     for url in mviewer_configs:

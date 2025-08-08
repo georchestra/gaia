@@ -102,7 +102,11 @@ class RedisClient:
                 args = task["args"][:-1]
             # specialcase for check_resources job checking all maps *and* resources
             if (
-                (name.endswith("check_res") or name.endswith("check_mviewer"))
+                (
+                    name.endswith("check_res")
+                    or name.endswith("check_mviewer")
+                    or name.endswith("gsdatadir_item")
+                )
                 and args is not None
                 and task["args"][:-1] != args
             ):
@@ -131,6 +135,8 @@ class RedisClient:
                 name = "geordash.checks.csw.check_catalog"
             if name.endswith("check_mviewer"):
                 name = "geordash.checks.mviewer.check_all"
+            if name.endswith("gsdatadir_item"):
+                name = "geordash.checks.gsd.gsdatadir"
         return (name, args, date_done)
 
     def get(self, key):
@@ -183,6 +189,9 @@ class RedisClient:
                 args = []
             if task["name"].endswith("check_mviewer"):
                 taskname = "geordash.checks.mviewer.check_all"
+                args = []
+            if task["name"].endswith("gsdatadir_item"):
+                taskname = "geordash.checks.gsd.gsdatadir"
                 args = []
             if task["name"].endswith("check_record"):
                 taskname = "geordash.checks.csw.check_catalog"

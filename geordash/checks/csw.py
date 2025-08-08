@@ -25,6 +25,7 @@ def check_catalog(url):
     taskslist = list()
     service = app.extensions["owscache"].get("csw", url)
     if service.s is None:
+        get_logger("CheckCsw").error(f"Found no cache entry for csw at {url}")
         return False
 
     # at that point, contents is populated

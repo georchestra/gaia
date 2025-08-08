@@ -6,4 +6,3 @@
 - check mapstore TEMPLATEs (category id=3)
 - a page by layer:
   - displaying getlegend graphics for available styles
-- a page for the local gs datadir checking datadir integrity -> https://github.com/landryb/geoserver-datadir-checker

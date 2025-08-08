@@ -1,0 +1,49 @@
+{% set title = 'datadir geoserver' %}
+{% include 'header.tmpl' %}
+
+        {% block scripts %}
+<script>
+let prev = {{ previous_jobs | tojson() }};
+if (prev && Array.isArray(prev) && prev.length > 0) {
+  const last = prev.reduce((a, b) => {
+    return new Date(a['finished']) > new Date(b['finished']) ? a : b;
+  });
+  PollTaskRes('geoserver', 'datadir', last['id'], {{ superuser|int }});
+}
+
+$(document).ready(function(){
+  DisplayPrev('geoserver', 'datadir', prev, {{ superuser|int }});
+{% if not gsd.parsed %}
+  ParseGSDD();
+{% endif %}
+});
+</script>
+        {% endblock scripts %}
+{% block content %}
+ <div class="container">
+<h1>Datadir Geoserver</h1>
+
+détails pour le datadir situé dans <code>{{ gsd.basepath }}</code>, version <code>{{ gsd.version }}</code>, url pour proxybase <code>{{ gsd.pburl }}</code>.
+
+{% if gsd.parsed %}
+<ul>
+{% for k in gsd.collections.keys() %}
+<li><a href='{{ url_for('dashboard.admin.geoserver_datadir_collection', colltype=k) }}'>{{ gsd.collections[k].len() }} entries for {{ k }}</a></li>
+{% endfor %}
+</ul>
+{% else %}
+<h2 id='parsing'>Parsing datadir in a background task..</h2>
+<div id="progress"></div>
+{% endif %}
+<form id='check' action="javascript:CheckRes('geoserver', 'datadir', {{ superuser|int }});">
+<input type=submit value="check now">
+</form>
+<h2 id='pbtitle'>Problems</h2>
+<div id='pbdetails'>No check has been run yet</div>
+<div id="problems"></div>
+<h2 id='previous'>Previous</h2>
+<p id='previouslist'>No previous check result has been found</p>
+</div>
+{% endblock %}
+</body>
+</html>
