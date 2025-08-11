@@ -5,6 +5,7 @@
 from configparser import ConfigParser
 from itertools import chain
 from os import getenv
+from subprocess import Popen, PIPE
 import json
 import re
 
@@ -50,6 +51,12 @@ class GeorchestraConfig:
             except:
                 # safe default value
                 self.sections["urls"]["localgs"] = "geoserver"
+        process = Popen(["git", "rev-parse", "HEAD"], stdout=PIPE)
+        (commit_hash, err) = process.communicate()
+        exit_code = process.wait()
+        if exit_code == 0:
+            self.sections["gaia"] = { 'commit': commit_hash.decode("utf-8")[0:8] }
+
 
     def get(self, key, section="default"):
         if section not in self.sections:
