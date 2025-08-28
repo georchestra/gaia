@@ -1,5 +1,5 @@
 # Dockerfile
-FROM python:3.10
+FROM debian:bookworm
 
 ENV FLASK_APP=geordash
 ENV FLASK_OPTS="-h 0.0.0.0 -p 5002"
@@ -13,18 +13,12 @@ ARG GID=10001
 RUN addgroup --gid ${GID} gaia
 RUN adduser --uid ${UID} --disabled-password --home /app --shell /bin/sh --ingroup gaia gunicorn
 
-
-
 RUN apt update && \
     apt install -y python3-flask-bootstrap python3-flask python3-celery python3-sqlalchemy \
-    python3-psycopg2 python3-owslib python3-jsonpickle python3-redis gunicorn python3-dotenv gdal-bin libgdal-dev && \
+    python3-psycopg2 python3-owslib python3-jsonpickle python3-redis python3-psutil gunicorn python3-gdal python3-pip
     apt clean && \
     rm -rf /var/lib/apt/lists/* && \
     rm -rf /usr/share/doc && rm -rf /usr/share/man
-
-COPY ./requirements.txt /
-
-RUN pip install -r requirements.txt
 
 RUN mkdir /geordash
 RUN chown gunicorn:gaia /geordash
@@ -33,4 +27,6 @@ USER gunicorn
 
 COPY . /geordash
 WORKDIR /geordash
-CMD ["flask", "-A", "geordash" ,"--debug", "run", "-h", "0.0.0.0", "-p", "5002"]
+# this is entrypoint for dev
+#CMD ["flask", "-A", "geordash", "run", "--debug", "-h", "0.0.0.0", "-p", "5002"]
+CMD ["sh", "-c", "python3 -m gunicorn --log-level INFO 'geordash:create_app()'"]

@@ -8,4 +8,4 @@ psycopg2
 pyproj
 psutil
 gunicorn
-gdal==3.10.3
+gdal

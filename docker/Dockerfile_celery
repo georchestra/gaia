@@ -1,5 +1,5 @@
 # Dockerfile
-FROM python:3.10
+FROM debian:bookworm
 
 ENV CELERY_APP="make_celery"
 ENV CELERY_OPTS="-P solo -B -E -s workdir/celerybeat-schedule"
@@ -12,16 +12,12 @@ ARG GID=10001
 RUN addgroup --gid ${GID} gaia
 RUN adduser --uid ${UID} --disabled-password --home /app --shell /bin/sh --ingroup gaia celery
 
-
-
 RUN apt update && \
     apt install -y python3-flask-bootstrap python3-flask python3-celery python3-sqlalchemy \
-    python3-psycopg2 python3-owslib python3-jsonpickle python3-redis gunicorn gdal-bin libgdal-dev && \
-    apt clean
-
-COPY ./requirements.txt /
-
-RUN pip install -r requirements.txt
+    python3-psycopg2 python3-owslib python3-jsonpickle python3-redis python3-psutil python3-gdal python3-pip gunicorn && \
+    apt clean && \
+    rm -rf /var/lib/apt/lists/* && \
+    rm -rf /usr/share/doc && rm -rf /usr/share/man
 
 RUN mkdir /geordash
 RUN chown celery:gaia /geordash
@@ -31,4 +27,4 @@ USER celery
 COPY . /geordash
 WORKDIR /geordash
 
-CMD ["sh", "-c", "celery -A make_celery worker --loglevel INFO -P solo -B -E -s workdir/celerybeat-schedule -s celerybeat-schedule"]
+CMD ["sh", "-c", "python3 -m celery -A make_celery worker --loglevel INFO -P solo -B -E -s workdir/celerybeat-schedule -s celerybeat-schedule"]

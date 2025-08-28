@@ -55,7 +55,7 @@ GAIA is being written using the versions of python/flask/celery provided by debi
 
 ```
 apt install python3-flask-bootstrap python3-flask python3-celery python3-sqlalchemy \
-    python3-psycopg2 python3-owslib python3-jsonpickle python3-redis python3-psutil gunicorn
+    python3-psycopg2 python3-owslib python3-jsonpickle python3-redis python3-psutil python3-gdal gunicorn
 ```
 
 ## virtualenv installation
