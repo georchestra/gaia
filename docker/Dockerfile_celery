@@ -14,7 +14,7 @@ RUN adduser --uid ${UID} --disabled-password --home /app --shell /bin/sh --ingro
 
 RUN apt update && \
     apt install -y python3-flask-bootstrap python3-flask python3-celery python3-sqlalchemy \
-    python3-psycopg2 python3-owslib python3-jsonpickle python3-redis python3-psutil python3-gdal python3-pip gunicorn && \
+    python3-psycopg2 python3-owslib python3-jsonpickle python3-redis python3-psutil python3-gdal gunicorn && \
     apt clean && \
     rm -rf /var/lib/apt/lists/* && \
     rm -rf /usr/share/doc && rm -rf /usr/share/man
