@@ -172,13 +172,12 @@ def check_gn_meta(self):
     testeddd = app.extensions["gndc"]
     gnmetadatas = testeddd.get_meta_list()
     # self.gnmetadatas.sort(key=lambda x: x.id)
-    get_logger("CheckGNDatadir").debug("pouet1")
-    print(gnmetadatas)
-    meta = list()
+    meta = dict()
+    meta["problems"] = list()
     total_could_be_deleted = 0
     for foldermeta in glob.glob("/mnt/geonetwork_datadir/data/metadata_data/*/*"):
         idmeta = foldermeta.split("/")[-1]
-        get_logger("CheckGNDatadir").debug("pouet " + foldermeta)
+        get_logger("CheckGNDatadir").debug(foldermeta)
         existing_index = 0
 
         for (index, item) in enumerate(gnmetadatas):
@@ -189,16 +188,32 @@ def check_gn_meta(self):
             continue
         else:
             # append useless folder
-            meta.append([foldermeta, str(get_folder_size(foldermeta))])
+            meta["problems"].append(
+                {
+                    "type": "UnusedFileRes",
+                    "path": foldermeta,
+                    "size" : str(get_folder_size(foldermeta))
+
+                }
+            )
             total_could_be_deleted += get_folder_size(foldermeta)
-            get_logger("CheckGNDatadir").debug("pouet aie aie aie")
     get_logger("CheckGNDatadir").debug("finish gn datadir checker")
     if not len(meta):
-        meta.append("result")
+        meta["problems"].append(
+        {
+            "type": "UnusedFileResNone",
+            "path": "None",
+            "size": "0 KB",
+        })
     else:
-        meta.append(["Total", str(total_could_be_deleted)])
+        meta["problems"].append(
+        {
+            "type": "UnusedFileResTotal",
+            "path": "Total",
+            "size": str(total_could_be_deleted),
+        })
 
-    return ["1", "2", "3"]
+    return meta
 
 
 
