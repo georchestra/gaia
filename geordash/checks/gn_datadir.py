@@ -169,7 +169,8 @@ def process_size(path):
 @shared_task(bind=True)
 def check_gn_meta(self):
     get_logger("CheckGNDatadir").debug("Start gn datadir checker")
-    gnmetadatas = app.extensions["gndc"].get_meta_list()
+    testeddd = app.extensions["gndc"]
+    gnmetadatas = testeddd.get_meta_list()
     # self.gnmetadatas.sort(key=lambda x: x.id)
     get_logger("CheckGNDatadir").debug("pouet1")
     print(gnmetadatas)
@@ -197,7 +198,7 @@ def check_gn_meta(self):
     else:
         meta.append(["Total", str(total_could_be_deleted)])
 
-    return meta
+    return ["1", "2", "3"]
 
 
 
