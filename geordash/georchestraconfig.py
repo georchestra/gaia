@@ -50,6 +50,11 @@ class GeorchestraConfig:
             except:
                 # safe default value
                 self.sections["urls"]["localgs"] = "geoserver"
+        with open(f"{self.datadirpath}/geonetwork/geonetwork.properties") as lines:
+            lines = chain(("[section]",), lines)  # This line does the trick.
+            parser.read_file(lines)
+        self.sections["geonetwork"] = parser["section"]
+
 
     def tostr(self):
         # pp = pprint.PrettyPrinter(indent=4)

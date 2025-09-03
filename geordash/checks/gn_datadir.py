@@ -169,19 +169,23 @@ def process_size(path):
 @shared_task(bind=True)
 def check_gn_meta(self):
     get_logger("CheckGNDatadir").debug("Start gn datadir checker")
-    testeddd = app.extensions["gndc"]
-    gnmetadatas = testeddd.get_meta_list()
+    metadatabase = app.extensions["gndc"]
+    gnmetadatas = metadatabase.get_meta_list()
     # self.gnmetadatas.sort(key=lambda x: x.id)
     meta = dict()
     meta["problems"] = list()
     total_could_be_deleted = 0
-    for foldermeta in glob.glob("/mnt/geonetwork_datadir/data/metadata_data/*/*"):
+    for foldermeta in glob.glob(app.extensions['conf'].get("geonetwork.dir", "geonetwork")+"/data/metadata_data/*/*"):
         idmeta = foldermeta.split("/")[-1]
+        get_logger("CheckGNDatadir").info(idmeta + " "+ foldermeta)
         get_logger("CheckGNDatadir").debug(foldermeta)
         existing_index = 0
 
         for (index, item) in enumerate(gnmetadatas):
+
             if item.id == int(idmeta):
+                get_logger("CheckGNDatadir").info(index)
+                get_logger("CheckGNDatadir").info(item.id)
                 existing_index = index
                 break
         if existing_index:
