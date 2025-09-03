@@ -156,36 +156,24 @@ class GeonetworkDatadirChecker:
     def get_meta_list(self):
         return self.allmetadatas
 
-
-def all_process_size(meta):
-    total_could_be_deleted = 0
-    for path in meta:
-        total_could_be_deleted += get_folder_size(path)
-    return "In total " + str(total_could_be_deleted) + " on "+ str(get_folder_size("/mnt/geonetwork_datdadir")) +" bytes could be deleted"
-
-def process_size(path):
-    return get_folder_size(path)
-
 @shared_task(bind=True)
 def check_gn_meta(self):
     get_logger("CheckGNDatadir").debug("Start gn datadir checker")
     metadatabase = app.extensions["gndc"]
     gnmetadatas = metadatabase.get_meta_list()
+    geonetwork_datadir_path = app.extensions['conf'].get("geonetwork.dir", "geonetwork")
     # self.gnmetadatas.sort(key=lambda x: x.id)
     meta = dict()
     meta["problems"] = list()
     total_could_be_deleted = 0
-    for foldermeta in glob.glob(app.extensions['conf'].get("geonetwork.dir", "geonetwork")+"/data/metadata_data/*/*"):
+    for foldermeta in glob.glob(geonetwork_datadir_path+"/data/metadata_data/*/*"):
         idmeta = foldermeta.split("/")[-1]
-        get_logger("CheckGNDatadir").info(idmeta + " "+ foldermeta)
         get_logger("CheckGNDatadir").debug(foldermeta)
         existing_index = 0
 
         for (index, item) in enumerate(gnmetadatas):
 
             if item.id == int(idmeta):
-                get_logger("CheckGNDatadir").info(index)
-                get_logger("CheckGNDatadir").info(item.id)
                 existing_index = index
                 break
         if existing_index:
@@ -215,6 +203,7 @@ def check_gn_meta(self):
             "type": "UnusedFileResTotal",
             "path": "Total",
             "size": str(total_could_be_deleted),
+            "total": str(get_folder_size(geonetwork_datadir_path))
         })
 
     return meta
