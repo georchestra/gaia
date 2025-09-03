@@ -41,6 +41,7 @@ def result(id: str) -> dict[str, object]:
             "geordash.checks.ows.owsservice",
             "geordash.checks.csw.check_catalog",
             "geordash.checks.gsd.gsdatadir",
+            "geordash.checks.gn_datadir",
         ):
             #            print(f"real taskset id is {result.result[0][0]}")
             result = GroupResult.restore(result.result[0][0])
@@ -326,9 +327,7 @@ def check_cswservice(url):
 def check_gndatadir():
     # metalist = geordash.checks.gn_datadir.check_gn_meta()
     # return {"result_id": metalist}
-
     # app.extensions["gndc"].refresh_meta_list()
-
     result = check_gn_meta.delay()
 
     return {"result_id": result.id}

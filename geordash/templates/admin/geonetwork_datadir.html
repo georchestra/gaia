@@ -8,10 +8,10 @@ if (prev && Array.isArray(prev) && prev.length > 0) {
   const last = prev.reduce((a, b) => {
     return new Date(a['finished']) > new Date(b['finished']) ? a : b;
   });
-  PollTaskRes('gn_datadir', 'result', last['id'], {{ superuser|int }}, '#pbtitle');
+  PollTaskRes('gndatadir', 'result', last['id'], {{ superuser|int }}, '#pbtitle');
 }
 $(document).ready(function(){
-  DisplayPrev('gn_datadir', 'result', prev, {{ superuser|int }}, '#previouslist');
+  DisplayPrev('gndatadir', 'result', prev, {{ superuser|int }}, '#previouslist');
 });
 
 </script>
@@ -21,8 +21,7 @@ $(document).ready(function(){
         {% block content %}
    <div class="container">
 <h1>Geonetwork datadir Checker</h1>
-
-<form id='check' action="javascript:CheckRes('gn_datadir', 'result', {{ superuser|int }} );">
+<form id='check' action="javascript:CheckRes('gndatadir', 'result', {{ superuser|int }} );">
 
 <input type=submit value="check all geonetwork datadir configs now">
 </form>
@@ -30,18 +29,13 @@ $(document).ready(function(){
 <div id='portalheader'>
 List of the useless ressources in geonetwork datadir:
 </div>
-    <table
-      id="uselessres"
-      data-pagination="true"
-      data-toggle="true"
-      data-search="true">
-   </table>
-   </div>
+
 <h4 id='pbtitle'>Problems</h4>
 <div id='pbdetails'></div>
 <div id="problems"></div>
 <h4 id='previous'>Previous</h4>
 <p id='previouslist'></p>
+       </div>
         {% endblock %}
 </body>
 </html>
