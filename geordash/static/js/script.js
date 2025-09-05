@@ -290,6 +290,12 @@ const GetPbStr = (p) => {
       return `RasterData '${p.skey.replaceAll('~','/')}' is unused`
     case 'UnusedVectorData':
       return `VectorData '${p.skey.replaceAll('~','/')}' is unused`
+    case 'UnusedFileRes':
+      return `Folder is useless '${p.path}' with size '${p.size}'`
+    case 'UnusedFileResTotal':
+      return `In total '${p.size}' could be saved on '${p.total}'`
+    case 'UnusedFileResNone':
+      return `No file are useless`
     default:
       return `Unhandled error code ${p.type} for problem ${p}`
   }
