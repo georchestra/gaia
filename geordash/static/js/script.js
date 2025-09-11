@@ -40,6 +40,40 @@ const fetchForHome = (widgets) => {
   })
 }
 
+const fetchForHomeSingleTask = (widgets) => {
+  widgets.forEach(function(o) {
+    fetch(baseurl + '/tasks/lastresultbytask/' + o["taskname"] + "?taskargs=" + o["taskargs"].join(","))
+      .then(response => response.json())
+      .then(mydata => {
+        if (parseInt(mydata["finished"])) {
+          const d = new Date(mydata["finished"] * 1000);
+          $(o["prefix"] + '-lastupdated').html("Information valid as of "+ d.toLocaleString("fr-FR") + '<br/>(taskid: '+ mydata['taskid'] + ')')
+        }
+        if (mydata === "notask") {
+          $(o["prefix"] + '-abstract').html("<span class='text-warning'>no " + o["taskname"] + " job found with args " + o["taskargs"].join(",") + ", something went wrong ?</span>")
+          return;
+        }
+        if (mydata['value'] === null && mydata['ready'] === false) {
+          $(o["prefix"] + '-abstract').html("<span class='text-primary'>job is currently running, " + mydata['completed'] + " objects checked</span>")
+          return;
+        }
+        let str = "<span class='text-success'>" + mydata['value']['problems'].length + ' entries</span><br/>';
+
+        const nerrors = mydata['value']['problems'].length;
+
+        if (nerrors > 0) {
+          str += "<span class='text-danger'>" + nerrors + " errors found !</span>";
+        } else {
+          str += "<span class='text-success'> no errors !</span>";
+        }
+        $(o["prefix"] + '-abstract').html(str);
+    })
+    .catch(function(err) {
+      $(o["prefix"] + '-abstract').html("<span class='bg-danger text-white'>something went wrong</span>")
+    });
+  })
+}
+
 const fetchMyMd = (localgnbaseurl) => {
   fetch(baseurl + '/api/geonetwork/metadatas.json')
     .then(response => response.json())
@@ -291,11 +325,10 @@ const GetPbStr = (p) => {
     case 'UnusedVectorData':
       return `VectorData '${p.skey.replaceAll('~','/')}' is unused`
     case 'UnusedFileRes':
-      return `Folder is useless '${p.path}' with size '${p.size}'`
+      {{ p.size |filesizeformat}}
+      return `Folder is useless '${p.path}' with size ' ${ p.size } '`
     case 'UnusedFileResTotal':
       return `In total '${p.size}' could be saved on '${p.total}'`
-    case 'UnusedFileResNone':
-      return `No file are useless`
     default:
       return `Unhandled error code ${p.type} for problem ${p}`
   }

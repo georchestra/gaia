@@ -13,9 +13,13 @@
 {% endif %}
 {% if superuser %}
                 {"prefix": "#gs-datadir", "taskname": "geordash.checks.gsd.gsdatadir","taskargs": []},
-                {"prefix": "#gndc", "taskname": "geordash.checks.gn_datadir.check_gn_meta","taskargs": []},
 {% endif %}
               ]);
+{% if superuser %}
+              fetchForHomeSingleTask([
+                {"prefix": "#gndc", "taskname": "geordash.checks.gn_datadir.check_gn_meta","taskargs": []},
+              ]);
+{% endif %}
 {% if 'sec-roles' not in request.headers or ( 'sec-roles' in request.headers and 'MAPSTORE_ADMIN' not in request.headers['sec-roles'] ) %}
               fetchMapsAndCtxCount('{{ url_for('dashboard.my_maps_and_apps') }}');
 {% endif %}
