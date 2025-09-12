@@ -55,7 +55,6 @@ class GeorchestraConfig:
             parser.read_file(lines)
         self.sections["geonetwork"] = parser["section"]
 
-
     def tostr(self):
         # pp = pprint.PrettyPrinter(indent=4)
         # return pp.pprint(self.sections)

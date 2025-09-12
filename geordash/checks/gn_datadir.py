@@ -31,7 +31,6 @@ import glob
 from pathlib import Path
 import jinja2
 
-
 Base = declarative_base()
 
 # Define the Metadata model (example schema of a GeoNetwork metadata table)
@@ -113,9 +112,8 @@ def check_gn_meta(self):
         idmeta = foldermeta.split("/")[-1]
         get_logger("CheckGNDatadir").debug(foldermeta)
         existing_index = 0
-        # maybe i could count the number of folders
-        for (index, item) in enumerate(gnmetadatas):
 
+        for (index, item) in enumerate(gnmetadatas):
             if item.id == int(idmeta):
                 existing_index = index
                 break

@@ -108,6 +108,7 @@ welcome to <a href='https://github.com/georchestra/gaia/'>gaia (geOrchestra Auto
   </div>
   </a>
  </div>
+{% if superuser %}
  <div class="col">
   <a class="text-decoration-none" href="{{ url_for('dashboard.admin.geonetwork_datadir') }}">
   <div class="card h-100" id="gndc-card">
@@ -119,7 +120,7 @@ welcome to <a href='https://github.com/georchestra/gaia/'>gaia (geOrchestra Auto
   </div>
   </a>
  </div>
-
+{% endif %}
  </div>
 </div>
 {% endblock %}

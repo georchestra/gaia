@@ -57,7 +57,7 @@ const fetchForHomeSingleTask = (widgets) => {
           $(o["prefix"] + '-abstract').html("<span class='text-primary'>job is currently running, " + mydata['completed'] + " objects checked</span>")
           return;
         }
-        let str = "<span class='text-success'>" + mydata['value']['problems'].length + ' entries</span><br/>';
+        let str = "<br/>";
 
         const nerrors = mydata['value']['problems'].length;
 
