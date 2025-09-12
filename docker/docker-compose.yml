@@ -70,7 +70,6 @@ services:
     build:
       context: ../
       dockerfile: ./docker/Dockerfile_celery
-
     volumes:
       - ../../datadir:/etc/georchestra
       - ../gunicorn.conf.py.example:/geordash/gunicorn.conf.py:ro

@@ -77,7 +77,6 @@ def home():
 @dash_bp.route("/debug")
 @debug_only
 def debug():
-
     return app.extensions["conf"].tostr()
 
 @dash_bp.route("/my-metadata")
