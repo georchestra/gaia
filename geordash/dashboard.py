@@ -243,7 +243,6 @@ def mviewer(url):
     if r.status_code == 200:
         if r.headers["content-type"] == "text/xml":
             r.encoding = "utf-8"
-
         mviewer_configs = app.extensions["owscache"].get_mviewer_configs()
         if not mviewer_configs:
             app.extensions["owscache"].set_mviewer_configs(

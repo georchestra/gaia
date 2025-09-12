@@ -29,6 +29,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.declarative import DeclarativeMeta
 import glob
 from pathlib import Path
+import jinja2
 
 
 Base = declarative_base()
@@ -102,16 +103,17 @@ def check_gn_meta(self):
     get_logger("CheckGNDatadir").debug("Start gn datadir checker")
     metadatabase = app.extensions["gndc"]
     gnmetadatas = metadatabase.get_meta_list()
-    geonetwork_datadir_path = app.extensions['conf'].get("geonetwork.dir", "geonetwork")
+    geonetwork_dir_path = app.extensions['conf'].get("geonetwork.dir", "geonetwork")
+    geonetwork_datadir_path = app.extensions['conf'].get("geonetwork.data.dir", "geonetwork").replace("${geonetwork.dir}", geonetwork_dir_path)
     # self.gnmetadatas.sort(key=lambda x: x.id)
     meta = dict()
     meta["problems"] = list()
     total_could_be_deleted = 0
-    for foldermeta in glob.glob(geonetwork_datadir_path+"/data/metadata_data/*/*"):
+    for foldermeta in glob.glob(geonetwork_datadir_path+"*/*"):
         idmeta = foldermeta.split("/")[-1]
         get_logger("CheckGNDatadir").debug(foldermeta)
         existing_index = 0
-
+        # maybe i could count the number of folders
         for (index, item) in enumerate(gnmetadatas):
 
             if item.id == int(idmeta):
@@ -125,8 +127,7 @@ def check_gn_meta(self):
                 {
                     "type": "UnusedFileRes",
                     "path": foldermeta,
-                    "size" : str(get_folder_size(foldermeta))
-
+                    "size" : jinja2.Template("{{ bytes | filesizeformat }}").render(bytes=get_folder_size(foldermeta))
                 }
             )
             total_could_be_deleted += get_folder_size(foldermeta)
@@ -137,8 +138,8 @@ def check_gn_meta(self):
         {
             "type": "UnusedFileResTotal",
             "path": "Total",
-            "size": str(total_could_be_deleted),
-            "total": str(get_folder_size(geonetwork_datadir_path))
+            "size": jinja2.Template("{{ bytes | filesizeformat }}").render(bytes=total_could_be_deleted),
+            "total": jinja2.Template("{{ bytes | filesizeformat }}").render(bytes=get_folder_size(geonetwork_dir_path))
         })
 
     return meta
