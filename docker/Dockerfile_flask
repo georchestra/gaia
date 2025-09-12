@@ -5,6 +5,7 @@ ENV FLASK_APP=geordash
 ENV FLASK_OPTS="-h 0.0.0.0 -p 5002"
 ENV georchestradatadir=/etc/georchestra
 ENV REDISURL=""
+#ENV FLASK_DEBUG=1
 
 # set fixed UID and GID - see github.com/hexops/dockerfile
 ARG UID=10000
