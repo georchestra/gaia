@@ -80,8 +80,6 @@ class GeonetworkDatadirChecker:
             name_for_collection_relationship=name_for_collection_relationship,
         )
         self.allmetadatas = self.session().query(Metadata).all()
-        # for (index, item) in enumerate(self.allmetadatas):
-        #     get_logger("CheckGNDatadir").debug("test1")
 
     def session(self):
         try:
@@ -90,9 +88,6 @@ class GeonetworkDatadirChecker:
             print("Reconnecting to the database...")
             self.sessiono = self.sessionm()
         return self.sessiono
-
-    def refresh_meta_list(self):
-        self.allmetadatas = self.session().query(Metadata).all()
 
     def get_meta_list(self):
         return self.allmetadatas
