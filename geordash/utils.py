@@ -122,6 +122,10 @@ def find_geoserver_datadir(default):
                     return pinfo["environ"]["GEOSERVER_DATA_DIR"]
         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
             pass
+
+    if os.getenv('GEOSERVER_DATA_DIR'):
+        default = os.getenv('GEOSERVER_DATA_DIR')
+
     if default is None:
         default = "/srv/data/geoserver"
     path = f"{default}/global.xml"

@@ -22,6 +22,7 @@ services:
       - ../geordash/celeryconfig.py.example:/geordash/geordash/celeryconfig.py:ro
       - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
       #- ../:/geordash
+      # need to add path of geonetwork and geoserver datadir in here
 
     ports:
       - "5002:5002"
@@ -60,6 +61,7 @@ services:
       # needed for kibana DO NOT REMOVE
       ELASTICSEARCH_HOSTS: http://${ES_HOST}:${ES_PORT}
       FQDN: georchestra-127-0-0-1.nip.io
+      GEOSERVER_DATA_DIR: /mnt/geoserver_datadir
 
 
   gaia-celery:
@@ -73,6 +75,7 @@ services:
       - ../geordash/celeryconfig.py.example:/geordash/geordash/celeryconfig.py:ro
       - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
       #- ../:/geordash
+      # need to add path of geonetwork and geoserver datadir in here
 
     environment:
       REQUESTS_CA_BUNDLE: /etc/ssl/certs/ca-certificates.crt
@@ -108,4 +111,4 @@ services:
       # needed for kibana DO NOT REMOVE
       ELASTICSEARCH_HOSTS: http://${ES_HOST}:${ES_PORT}
       FQDN: georchestra-127-0-0-1.nip.io
-
+      GEOSERVER_DATA_DIR: /mnt/geoserver_datadir
