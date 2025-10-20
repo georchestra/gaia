@@ -61,11 +61,11 @@ class GeonetworkDatadirChecker:
     def __init__(self, conf):
         url = URL.create(
             drivername="postgresql",
-            username=conf.get("pgsqlUser"),
-            host=conf.get("pgsqlHost"),
-            port=conf.get("pgsqlPort"),
-            password=conf.get("pgsqlPassword"),
-            database=conf.get("pgsqlDatabase"),
+            username=conf.get("jdbc.username", "geonetwork"),
+            host=conf.get("jdbc.host", "geonetwork"),
+            port=conf.get("jdbc.port", "geonetwork"),
+            password=conf.get("jdbc.password", "geonetwork"),
+            database=conf.get("jdbc.database", "geonetwork"),
         )
 
         engine = create_engine(url)
@@ -73,7 +73,7 @@ class GeonetworkDatadirChecker:
         self.sessiono = self.sessionm()
 
         # Perform database reflection to analyze tables and relationships
-        m = MetaData(schema=conf.get("geonetworkSchema"))
+        m = MetaData(schema=conf.get("jdbc.schema", "geonetwork"))
         Base = automap_base(metadata=m)
         Base.prepare(
             autoload_with=engine,

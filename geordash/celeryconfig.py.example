@@ -11,6 +11,7 @@ imports = (
     "geordash.checks.csw",
     "geordash.checks.mviewer",
     "geordash.checks.gsd",
+    "geordash.checks.gn_datadir",
 )
 # worker_pool = solo
 worker_log_format = (
