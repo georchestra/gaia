@@ -29,4 +29,4 @@ COPY . /geordash
 WORKDIR /geordash
 # this is entrypoint for dev
 #CMD ["flask", "-A", "geordash", "run", "--debug", "-h", "0.0.0.0", "-p", "5002"]
-CMD ["sh", "-c", "python3 -m gunicorn --log-level INFO 'geordash:create_app()'"]
+CMD ["sh", "-c", "python3 -m gunicorn --log-level INFO 'geordash:create_app()'  --timeout=0"]
