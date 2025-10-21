@@ -61,7 +61,7 @@ jobs:
 
       - name: "Pushing branch/tag to docker.io"
         run: |
-          docker tag georchestra/gaia-celery:${{ steps.version.outputs.VERSION }}
-          docker tag georchestra/gaia:${{ steps.version.outputs.VERSION }}
+          docker tag georchestra/gaia-celery:latest georchestra/gaia-celery:${{ steps.version.outputs.VERSION }}
+          docker tag georchestra/gaia:latest georchestra/gaia:${{ steps.version.outputs.VERSION }}
           docker push georchestra/gaia-celery:${{ steps.version.outputs.VERSION }}
           docker push georchestra/gaia:${{ steps.version.outputs.VERSION }}
