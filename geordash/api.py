@@ -151,8 +151,21 @@ def geonetwork_subportals():
     headers = r[0]
     cookies = r[1]
     me = r[2]
+
+    gn_site = requests.get(gnurl + "srv/api/site", cookies=cookies, headers=headers)
+    information_site = gn_site.json()
+
+    # default url of subportal sources
+    subportalapiurl = "srv/api/sources"
+    if "4.4." in  information_site['system/platform/version']:
+        # url for 4.4.8
+        subportalapiurl = "srv/api/sources?type=subportal"
+    elif "4.2." in information_site['system/platform/version']:
+        # url for 4.2.8
+        subportalapiurl = "srv/api/sources/subportal"
+
     portals = requests.get(
-        gnurl + "srv/api/sources/subportal", cookies=cookies, headers=headers
+        gnurl + subportalapiurl, cookies=cookies, headers=headers
     )
     if portals.status_code != 200:
         return portals.text
