@@ -239,12 +239,13 @@ class RedisClient:
                             )
                         if date_done is not None:
                             taskids[taskid] = {"finished": date_done}
-                    found_taskids.append(
-                        {
-                            "id": taskid,
-                            "finished": taskids[taskid]["finished"].timestamp(),
-                        }
-                    )
+                    if taskids[taskid]["finished"] is not None:
+                        found_taskids.append(
+                            {
+                                "id": taskid,
+                                "finished": taskids[taskid]["finished"].timestamp(),
+                            }
+                        )
 
                 # remove taskids from the in-memory list
                 for t in dropped_taskids:
