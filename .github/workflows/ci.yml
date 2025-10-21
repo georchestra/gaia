@@ -6,6 +6,7 @@ on:
     branches:
       - master
       - '*.x'
+      - task_wraps
     tags:
       - '*'
 
@@ -59,9 +60,8 @@ jobs:
           short-description: 'Gaia module for the geOrchestra SDI'
 
       - name: "Pushing branch/tag to docker.io"
-        if: (contains(github.ref, 'refs/tags/') || endsWith(github.ref, '.x')) && github.repository == 'georchestra/gaia' && github.actor != 'dependabot[bot]' && github.event_name != 'pull_request'
         run: |
-          docker tag georchestra/gaia-celery:latest georchestra/gaia-celery:${{ steps.version.outputs.VERSION }}
-          docker tag georchestra/gaia:latest georchestra/gaia:${{ steps.version.outputs.VERSION }}
+          docker tag georchestra/gaia-celery:${{ steps.version.outputs.VERSION }}
+          docker tag georchestra/gaia:${{ steps.version.outputs.VERSION }}
           docker push georchestra/gaia-celery:${{ steps.version.outputs.VERSION }}
           docker push georchestra/gaia:${{ steps.version.outputs.VERSION }}
