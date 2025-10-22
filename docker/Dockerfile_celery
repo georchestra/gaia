@@ -27,4 +27,4 @@ USER celery
 COPY . /geordash
 WORKDIR /geordash
 
-CMD ["sh", "-c", "python3 -m celery -A make_celery worker --loglevel INFO -P solo -B -E -s workdir/celerybeat-schedule -s celerybeat-schedule"]
+CMD ["sh", "-c", "python3 -m celery -A make_celery worker --loglevel INFO -P solo -B -E -s workdir/celerybeat-schedule"]
