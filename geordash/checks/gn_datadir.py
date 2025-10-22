@@ -19,7 +19,7 @@ from flask import current_app as app
 from geordash.utils import find_localmduuid, unmunge, objtype
 
 
-from sqlalchemy import create_engine, MetaData, select, Column, String, Integer, Text
+from sqlalchemy import create_engine, MetaData, select, Column, String, Integer, Text, Table
 from sqlalchemy.dialects.postgresql import array
 from sqlalchemy.engine import URL
 from sqlalchemy.ext.automap import automap_base
@@ -32,16 +32,6 @@ from pathlib import Path
 import jinja2
 
 Base = declarative_base()
-
-# Define the Metadata model (example schema of a GeoNetwork metadata table)
-class Metadata(Base):
-    __tablename__ = "metadata"
-    __table_args__ = {"schema": "geonetwork"}
-    id = Column(Integer, primary_key=True)
-    uuid = Column(String, unique=True)
-    data = Column(Text)  # Metadata content (e.g., XML or JSON)
-    schemaid = Column(String)  # Metadata schema (e.g., ISO 19115)
-    isharvested = Column(Integer)
 
 def get_folder_size(folder):
     return sum(file.stat().st_size for file in Path(folder).rglob('*'))
@@ -68,17 +58,17 @@ class GeonetworkDatadirChecker:
             database=conf.get("jdbc.database", "geonetwork"),
         )
 
-        engine = create_engine(url)
+        engine = create_engine(url, connect_args={"options": f"-csearch_path={conf.get('jdbc.schema', 'geonetwork')}"})
         self.sessionm = sessionmaker(bind=engine)
         self.sessiono = self.sessionm()
 
         # Perform database reflection to analyze tables and relationships
         m = MetaData(schema=conf.get("jdbc.schema", "geonetwork"))
+        Table('metadata', m, autoload_with=engine)
         Base = automap_base(metadata=m)
-        Base.prepare(
-            autoload_with=engine,
-            name_for_collection_relationship=name_for_collection_relationship,
-        )
+        Base.prepare()
+        Metadata = Base.classes.metadata
+
         self.allmetadatas = self.session().query(Metadata).all()
 
     def session(self):
