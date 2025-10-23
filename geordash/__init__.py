@@ -58,6 +58,7 @@ def create_app() -> Flask:
         return {
             "instancename": instancename,
             "superuser": is_superuser(),
+            "commit": app.extensions["conf"].get("commit", "gaia"),
             "has_mviewer": app.extensions["owscache"].get_mviewer_configs() != None,
             "bootstrap": app.extensions["bootstrap"],
             "localgsbaseurl": app.extensions["conf"].get("localgs", "urls"),

@@ -4,7 +4,7 @@
 
 from configparser import ConfigParser
 from itertools import chain
-from os import getenv
+from os import getenv, getcwd
 import json
 import re
 import pprint
@@ -54,6 +54,23 @@ class GeorchestraConfig:
             lines = chain(("[section]",), lines)  # This line does the trick.
             parser.read_file(lines)
         self.sections["geonetwork"] = parser["section"]
+        
+        # read current commit from .git/HEAD which might lead to the branch tip
+        prefix = getcwd() + "/.git/"
+        self.sections["gaia"] = {"commit": None}
+        try:
+            with open(prefix + "HEAD", "r") as head:
+                branchref = head.read()
+            # we're on a tag that's a git sha
+            if re.match("^[0-9a-f]{32,}$", branchref):
+                self.sections["gaia"] = {"commit": branchref[0:8]}
+            # else we're on a branch
+            elif re.match("^ref: refs/heads/.*$", branchref):
+                with open(prefix + branchref.split(" ")[1].strip(), "r") as branch:
+                    self.sections["gaia"] = {"commit": branch.read().strip()[0:8]}
+        except OSError:
+            # failed to read .git/HEAD or .git/refs/heads/* ?
+            pass
 
     def tostr(self):
         # pp = pprint.PrettyPrinter(indent=4)

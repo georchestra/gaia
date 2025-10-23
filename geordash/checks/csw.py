@@ -162,7 +162,7 @@ def check_record(url, uuid):
                         )
                     else:
                         r = requests.head(u["url"], timeout=timeout)
-                    if r.status_code != 200:
+                    if r.status_code != 200 and r.status_code != 429:
                         ret["problems"].append(
                             {
                                 "type": "BrokenProtocolUrl",
