@@ -67,9 +67,7 @@ class GeonetworkDatadirChecker:
         Table('metadata', m, autoload_with=engine)
         Base = automap_base(metadata=m)
         Base.prepare()
-        Metadata = Base.classes.metadata
-
-        self.allmetadatas = self.session().query(Metadata).all()
+        self.Metadata = Base.classes.metadata
 
     def session(self):
         try:
@@ -80,7 +78,7 @@ class GeonetworkDatadirChecker:
         return self.sessiono
 
     def get_meta_list(self):
-        return self.allmetadatas
+        return self.session().query(self.Metadata).all()
 
 @shared_task(bind=True)
 def check_gn_meta(self):
