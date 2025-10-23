@@ -15,6 +15,11 @@
                 {"prefix": "#gs-datadir", "taskname": "geordash.checks.gsd.gsdatadir","taskargs": []},
 {% endif %}
               ]);
+{% if superuser %}
+              fetchForHomeSingleTask([
+                {"prefix": "#gndc", "taskname": "geordash.checks.gn_datadir.check_gn_meta","taskargs": []},
+              ]);
+{% endif %}
 {% if 'sec-roles' not in request.headers or ( 'sec-roles' in request.headers and 'MAPSTORE_ADMIN' not in request.headers['sec-roles'] ) %}
               fetchMapsAndCtxCount('{{ url_for('dashboard.my_maps_and_apps') }}');
 {% endif %}
@@ -103,7 +108,20 @@ welcome to <a href='https://github.com/georchestra/gaia/'>gaia (geOrchestra Auto
   </div>
   </a>
  </div>
-</div>
+{% if superuser %}
+ <div class="col">
+  <a class="text-decoration-none" href="{{ url_for('dashboard.admin.geonetwork_datadir') }}">
+  <div class="card h-100" id="gndc-card">
+    <div class="card-body">
+      <h5 class="card-title">Geonetwork Datadir Checker</h5>
+      <p class="card-text" id="gndc-abstract">Placeholder</p>
+      <p class="card-text"><small class="text-muted" id="gndc-lastupdated">Job never ran</small></p>
+    </div>
+  </div>
+  </a>
+ </div>
+{% endif %}
+ </div>
 </div>
 {% endblock %}
     </body>

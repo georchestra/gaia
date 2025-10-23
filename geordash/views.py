@@ -12,6 +12,7 @@ import requests
 
 from geordash.utils import unmunge
 from geordash.checks.mapstore import check_res, check_configs, check_resources
+from geordash.checks.gn_datadir import check_gn_meta
 from geordash.tasks.fetch_csw import get_records
 from geordash.tasks.gsdatadir import parse_gsdatadir
 import geordash.checks.ows
@@ -40,6 +41,7 @@ def result(id: str) -> dict[str, object]:
             "geordash.checks.ows.owsservice",
             "geordash.checks.csw.check_catalog",
             "geordash.checks.gsd.gsdatadir",
+            "geordash.checks.gn_datadir",
         ):
             #            print(f"real taskset id is {result.result[0][0]}")
             result = GroupResult.restore(result.result[0][0])
@@ -320,3 +322,8 @@ def check_cswservice(url):
             "geordash.checks.csw.check_catalog", [url], groupresult.id
         )
     return {"result_id": groupresult.id}
+
+@tasks_bp.route("/check/gndatadir/result.json")
+def check_gndatadir():
+    result = check_gn_meta.delay()
+    return {"result_id": result.id}

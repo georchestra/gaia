@@ -1,0 +1,41 @@
+{% set title = 'admin geonetwork' %}
+{% include 'header.tmpl' %}
+
+        {% block scripts %}
+<script>
+let prev = {{ previous_configs_jobs | tojson() }};
+if (prev && Array.isArray(prev) && prev.length > 0) {
+  const last = prev.reduce((a, b) => {
+    return new Date(a['finished']) > new Date(b['finished']) ? a : b;
+  });
+  PollTaskRes('gndatadir', 'result', last['id'], {{ superuser|int }}, '#pbtitle');
+}
+$(document).ready(function(){
+  DisplayPrev('gndatadir', 'result', prev, {{ superuser|int }}, '#previouslist');
+});
+
+</script>
+        {% endblock %}
+
+        <!-- Your page content --> 
+        {% block content %}
+   <div class="container">
+<h1>Geonetwork datadir Checker</h1>
+<form id='check' action="javascript:CheckRes('gndatadir', 'result', {{ superuser|int }} );">
+
+<input type=submit value="check all geonetwork datadir configs now">
+</form>
+<p id="taille"></p>
+<div id='portalheader'>
+List of the useless ressources in geonetwork datadir:
+</div>
+
+<h4 id='pbtitle'>Problems</h4>
+<div id='pbdetails'></div>
+<div id="problems"></div>
+<h4 id='previous'>Previous</h4>
+<p id='previouslist'></p>
+       </div>
+        {% endblock %}
+</body>
+</html>

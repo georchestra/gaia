@@ -11,6 +11,7 @@ from geordash.owscapcache import OwsCapCache
 from geordash.georchestraconfig import GeorchestraConfig
 from geordash.result_backend.redisbackend import RedisClient
 from geordash.checks.mapstore import MapstoreChecker
+from geordash.checks.gn_datadir import GeonetworkDatadirChecker
 from geordash.decorators import is_superuser
 from config import url as redisurl
 import threading
@@ -86,6 +87,7 @@ def create_app() -> Flask:
     app.extensions["conf"] = conf
     app.extensions["owscache"] = OwsCapCache(conf, app)
     app.extensions["msc"] = MapstoreChecker(conf)
+    app.extensions["gndc"] = GeonetworkDatadirChecker(conf)
     app.extensions["rcli"] = RedisClient(redisurl)
     from . import views, api, admin, dashboard
 

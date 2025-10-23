@@ -51,6 +51,13 @@ def geonetwork():
         p["xurl"] = url_for("dashboard.csw", portal=p["uuid"])
     return render_template("admin/geonetwork.html", portals=portals)
 
+@admin_bp.route("/geonetwork/datadir")
+@check_role(role="GN_ADMIN")
+def geonetwork_datadir():
+    all_jobs_for_gnconfigs = app.extensions["rcli"].get_taskids_by_taskname_and_args(
+        "geordash.checks.gn_datadir.check_gn_meta", []
+    )
+    return render_template("admin/geonetwork_datadir.html", previous_configs_jobs=all_jobs_for_gnconfigs)
 
 @admin_bp.route("/geoserver")
 @check_role(role="ADMINISTRATOR")
