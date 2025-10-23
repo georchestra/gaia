@@ -89,6 +89,7 @@ def check_gn_meta(self):
     geonetwork_datadir_path = app.extensions['conf'].get("geonetwork.data.dir", "geonetwork").replace("${geonetwork.dir}", geonetwork_dir_path)
     # self.gnmetadatas.sort(key=lambda x: x.id)
     meta = dict()
+    meta["args"] = geonetwork_datadir_path
     meta["problems"] = list()
     total_could_be_deleted = 0
     for foldermeta in glob.glob(geonetwork_datadir_path+"*/*"):
@@ -108,7 +109,8 @@ def check_gn_meta(self):
                 {
                     "type": "UnusedFileRes",
                     "path": foldermeta,
-                    "size" : jinja2.Template("{{ bytes | filesizeformat }}").render(bytes=get_folder_size(foldermeta))
+                    "url": foldermeta,
+                    "problem" : jinja2.Template("{{ bytes | filesizeformat }}").render(bytes=get_folder_size(foldermeta))
                 }
             )
             total_could_be_deleted += get_folder_size(foldermeta)

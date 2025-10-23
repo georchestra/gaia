@@ -325,9 +325,9 @@ const GetPbStr = (p) => {
     case 'UnusedVectorData':
       return `VectorData '${p.skey.replaceAll('~','/')}' is unused`
     case 'UnusedFileRes':
-      return `Folder is useless '${p.path}' with size ' ${ p.size } '`
+      return `${p.path} with size ${p.size}`
     case 'UnusedFileResTotal':
-      return `In total '${p.size}' could be saved on '${p.total}'`
+      return `In total ${p.size} could be saved on ${p.total}`
     default:
       return `Unhandled error code ${p.type} for problem ${p}`
   }
@@ -484,11 +484,13 @@ const PollTaskRes = (type, resid, taskid, showdelete, targetdivid = '#pbtitle') 
                       data["value"].problems = probs.flat(1)
                   } else {
                       // if problems is undef, single task badly failed and returned the python exception as value
-                      if (data["value"].problems !== undefined) {
-                        const probs = data["value"].problems.map(i => {
-                          return GetPbStr(i)
-                        })
-                        data["value"].problems = probs
+                      if (!data['task'].includes('gn_datadir')) {
+                          if (data["value"].problems !== undefined) {
+                            const probs = data["value"].problems.map(i => {
+                              return GetPbStr(i)
+                            })
+                            data["value"].problems = probs
+                          }
                       }
                   }
                   if (data["value"].problems !== undefined && data["value"].problems.length > 0) {
@@ -504,10 +506,18 @@ const PollTaskRes = (type, resid, taskid, showdelete, targetdivid = '#pbtitle') 
                       const missing = all.filter(x => !done.includes(x));
                       $(targetdivid).text("jobs on " + missing + " failed, did " + data["completed"] + " - on those, " + data["value"].problems.length + ' problems found');
                     } else {
+                      if (data['task'].includes('gn_datadir')) {
+                          // if gn_datadir will remove last problem as it is a total count
+                          totalgndatadir = data["value"].problems.pop()
+                          const exporttotalgndatadir = $("<p>");
+                          exporttotalgndatadir.html("<p>"+GetPbStr(totalgndatadir)+"</p>")
+                          $(targetpbdivid).append(exporttotalgndatadir)
+                        }
                       $(targetdivid).text(data["value"].problems.length + ' problems found');
                     }
-                    if (Array.isArray(data["value"])) {
+                    if (Array.isArray(data["value"]) || Array.isArray(data["value"]['problems'])) {
                         var argtitle = 'Layer'
+                        var argcolumn2 = 'Problem'
                         if (data['task'].includes('csw')) {
                           argtitle = 'Metadata'
                         } else if (data['task'].includes('check_resources')) {
@@ -518,6 +528,9 @@ const PollTaskRes = (type, resid, taskid, showdelete, targetdivid = '#pbtitle') 
                           argtitle = 'Config url'
                         } else if (data['task'].includes('gsd.gsdatadir')) {
                           argtitle = 'Item'
+                        } else if (data['task'].includes('gn_datadir')) {
+                          argtitle = 'Path'
+                          argcolumn2 = 'Size'
                         }
                         var prevexp = $(targetpbdivid + '-export')
                         if (prevexp.length > 0) {
@@ -544,7 +557,7 @@ const PollTaskRes = (type, resid, taskid, showdelete, targetdivid = '#pbtitle') 
                             columns: [
                               {'title': 'Index', 'formatter': 'runningFormatter'},
                               {'field': 'url', 'title': argtitle, 'sortable': true, 'formatter': 'urlFormatter'},
-                              {'field': 'problem', 'title': 'Problem', 'sortable': true}
+                              {'field': 'problem', 'title': argcolumn2, 'sortable': true}
                             ]
                           });
                         }
