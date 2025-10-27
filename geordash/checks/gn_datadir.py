@@ -89,11 +89,12 @@ def check_gn_meta(self):
     geonetwork_datadir_path = app.extensions['conf'].get("geonetwork.data.dir", "geonetwork").replace("${geonetwork.dir}", geonetwork_dir_path)
     # self.gnmetadatas.sort(key=lambda x: x.id)
     meta = dict()
-    meta["args"] = geonetwork_datadir_path
+    meta["searching_path"] = geonetwork_datadir_path
     meta["problems"] = list()
     total_could_be_deleted = 0
     for foldermeta in glob.glob(geonetwork_datadir_path+"*/*"):
         idmeta = foldermeta.split("/")[-1]
+        subpath = foldermeta.split("/")[-2]
         get_logger("CheckGNDatadir").debug(foldermeta)
         existing_index = 0
 
@@ -108,8 +109,8 @@ def check_gn_meta(self):
             meta["problems"].append(
                 {
                     "type": "UnusedFileRes",
-                    "path": foldermeta,
-                    "url": foldermeta,
+                    "path": subpath+"/"+idmeta,
+                    "url": subpath+"/"+idmeta,
                     "problem" : jinja2.Template("{{ bytes | filesizeformat }}").render(bytes=get_folder_size(foldermeta))
                 }
             )

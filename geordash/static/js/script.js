@@ -508,10 +508,11 @@ const PollTaskRes = (type, resid, taskid, showdelete, targetdivid = '#pbtitle') 
                     } else {
                       if (data['task'].includes('gn_datadir')) {
                           // if gn_datadir will remove last problem as it is a total count
+                          const targetpboverviewdivid = targetdivid.replace('#pbtitle', '#pboverviews')
                           totalgndatadir = data["value"].problems.pop()
-                          const exporttotalgndatadir = $("<p>");
-                          exporttotalgndatadir.html("<p>"+GetPbStr(totalgndatadir)+"</p>")
-                          $(targetpbdivid).append(exporttotalgndatadir)
+                          const exporttotalgndatadir = $("<div>");
+                          exporttotalgndatadir.html("<p>"+GetPbStr(totalgndatadir)+" within the path "+data["value"]["searching_path"]+"</p>" )
+                          $(targetpboverviewdivid).html(exporttotalgndatadir)
                         }
                       $(targetdivid).text(data["value"].problems.length + ' problems found');
                     }
