@@ -324,8 +324,6 @@ const GetPbStr = (p) => {
       return `RasterData '${p.skey.replaceAll('~','/')}' is unused`
     case 'UnusedVectorData':
       return `VectorData '${p.skey.replaceAll('~','/')}' is unused`
-    case 'UnusedFileRes':
-      return `${p.path} with size ${p.size}`
     case 'UnusedFileResTotal':
       return `In total ${p.size} could be saved on ${p.total}`
     default:
