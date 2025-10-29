@@ -579,6 +579,10 @@ const PollTaskRes = (type, resid, taskid, showdelete, targetdivid = '#pbtitle') 
                       $(targetdivid).html('<a href="https://lessalesmajestes.bandcamp.com/album/no-problemo">No problemo!</a>')
                     }
                     $(targetpbdivid).empty();
+                    if (data['task'].includes('gn_datadir')) {
+                       const targetpboverviewdivid = targetdivid.replace('#pbtitle', '#pboverviews');
+                       $(targetpboverviewdivid).empty();
+                    }
                   }
                   const d = new Date(data["finished"] * 1000);
                   $(targetpbdetdivid).text('vérification faite le '+ d.toLocaleString("fr-FR"));
