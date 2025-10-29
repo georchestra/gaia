@@ -325,7 +325,7 @@ const GetPbStr = (p) => {
     case 'UnusedVectorData':
       return `VectorData '${p.skey.replaceAll('~','/')}' is unused`
     case 'UnusedFileResTotal':
-      return `In total ${sizeFormatter(p.size)} could be saved on ${sizeFormatter(p.total)}`
+      return `In total ${bytesFormatter(p.size)} could be saved on ${bytesFormatter(p.total)}`
     default:
       return `Unhandled error code ${p.type} for problem ${p}`
   }
@@ -531,7 +531,7 @@ const PollTaskRes = (type, resid, taskid, showdelete, targetdivid = '#pbtitle') 
                         } else if (data['task'].includes('gn_datadir')) {
                           argtitle = 'Path'
                           argcolumn2 = 'Size'
-                          columns2Formatter = 'sizeFormatter'
+                          columns2Formatter = 'bytesFormatter'
                         }
                         var prevexp = $(targetpbdivid + '-export')
                         if (prevexp.length > 0) {
@@ -621,16 +621,12 @@ function urlFormatter(value, row) {
     return row.url
   }
 }
-function bytesToSize(bytes) {
+function bytesFormatter(bytes, row="") {
     var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
     if (bytes == 0) return 'n/a';
     var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
     if (i == 0) return bytes + ' ' + sizes[i];
     return (bytes / Math.pow(1024, i)).toFixed(1) + ' ' + sizes[i];
-}
-
-function sizeFormatter(value, row) {
-  return bytesToSize(value)
 }
 function runningFormatter(value, row, index) {
     return 1 + index;
