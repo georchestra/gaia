@@ -19,17 +19,6 @@ Base = declarative_base()
 def get_folder_size(folder):
     return sum(file.stat().st_size for file in Path(folder).rglob('*'))
 
-# solves conflicts in relationship naming ?
-def name_for_collection_relationship(base, local_cls, referred_cls, constraint):
-    name = referred_cls.__name__.lower()
-    local_table = local_cls.__table__
-    # print("local_cls={}, local_table={}, referred_cls={}, will return name={}, constraint={}".format(local_cls, local_table, referred_cls, name, constraint))
-    if name in local_table.columns:
-        newname = name + "_"
-        print("Already detected name %s present.  using %s" % (name, newname))
-        return newname
-    return name
-
 class GeonetworkDatadirChecker:
     def __init__(self, conf):
         url = URL.create(
