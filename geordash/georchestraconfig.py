@@ -86,8 +86,6 @@ class GeorchestraConfig:
                     + self.get(key2, section=key)
                     + "\r\n<br> "
                 )
-        print(type(str))
-        print(f"Keys in string: {str}")
         return str
 
     def get(self, key, section="default"):
