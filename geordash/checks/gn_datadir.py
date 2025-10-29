@@ -123,7 +123,7 @@ def check_gn_meta(self):
             "type": "UnusedFileResTotal",
             "path": "Total",
             "size": jinja2.Template("{{ bytes | filesizeformat }}").render(bytes=total_could_be_deleted),
-            "total": jinja2.Template("{{ bytes | filesizeformat }}").render(bytes=get_folder_size(geonetwork_dir_path))
+            "total": jinja2.Template("{{ bytes | filesizeformat }}").render(bytes=get_folder_size(geonetwork_datadir_path))
         })
 
     return meta
