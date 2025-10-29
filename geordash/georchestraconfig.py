@@ -7,7 +7,6 @@ from itertools import chain
 from os import getenv, getcwd
 import json
 import re
-import pprint
 
 class GeorchestraConfig:
     def __init__(self):
@@ -74,9 +73,6 @@ class GeorchestraConfig:
             pass
 
     def tostr(self):
-        # pp = pprint.PrettyPrinter(indent=4)
-        # return pp.pprint(self.sections)
-
         str = ""
         for key in self.sections:
             str += key + ":\r\n<br>"

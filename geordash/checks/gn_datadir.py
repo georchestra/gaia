@@ -7,20 +7,12 @@ import requests
 from requests.exceptions import ReadTimeout
 
 from celery import shared_task
-from celery import Task
-from celery import group
 
 from geordash.logwrap import get_logger
-from geordash.owscapcache import OwsCapCache
-
-from owslib.fes import PropertyIsEqualTo, And
 
 from flask import current_app as app
-from geordash.utils import find_localmduuid, unmunge, objtype
-
 
 from sqlalchemy import create_engine, MetaData, select, Column, String, Integer, Text, Table
-from sqlalchemy.dialects.postgresql import array
 from sqlalchemy.engine import URL
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.exc import NoResultFound, OperationalError
