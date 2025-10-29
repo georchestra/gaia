@@ -92,12 +92,8 @@ def check_gn_meta(self):
             # append useless folder
             meta["problems"].append(
                 {
-                    "type": "UnusedFileRes",
-                    "path": subpath + "/" + idmeta,
                     "url": subpath + "/" + idmeta,
-                    "problem": jinja2.Template("{{ bytes | filesizeformat }}").render(
-                        bytes=get_folder_size(foldermeta)
-                    ),
+                    "problem": get_folder_size(foldermeta),
                 }
             )
             total_could_be_deleted += get_folder_size(foldermeta)
@@ -107,13 +103,8 @@ def check_gn_meta(self):
         meta["problems"].append(
             {
                 "type": "UnusedFileResTotal",
-                "path": "Total",
-                "size": jinja2.Template("{{ bytes | filesizeformat }}").render(
-                    bytes=total_could_be_deleted
-                ),
-                "total": jinja2.Template("{{ bytes | filesizeformat }}").render(
-                    bytes=get_folder_size(geonetwork_datadir_path)
-                ),
+                "size": total_could_be_deleted,
+                "total": get_folder_size(geonetwork_datadir_path),
             }
         )
 

@@ -325,7 +325,7 @@ const GetPbStr = (p) => {
     case 'UnusedVectorData':
       return `VectorData '${p.skey.replaceAll('~','/')}' is unused`
     case 'UnusedFileResTotal':
-      return `In total ${p.size} could be saved on ${p.total}`
+      return `In total ${sizeFormatter(p.size)} could be saved on ${sizeFormatter(p.total)}`
     default:
       return `Unhandled error code ${p.type} for problem ${p}`
   }
@@ -517,6 +517,7 @@ const PollTaskRes = (type, resid, taskid, showdelete, targetdivid = '#pbtitle') 
                     if (Array.isArray(data["value"]) || Array.isArray(data["value"]['problems'])) {
                         var argtitle = 'Layer'
                         var argcolumn2 = 'Problem'
+                        var columns2Formatter = 'None'
                         if (data['task'].includes('csw')) {
                           argtitle = 'Metadata'
                         } else if (data['task'].includes('check_resources')) {
@@ -530,6 +531,7 @@ const PollTaskRes = (type, resid, taskid, showdelete, targetdivid = '#pbtitle') 
                         } else if (data['task'].includes('gn_datadir')) {
                           argtitle = 'Path'
                           argcolumn2 = 'Size'
+                          columns2Formatter = 'sizeFormatter'
                         }
                         var prevexp = $(targetpbdivid + '-export')
                         if (prevexp.length > 0) {
@@ -556,7 +558,7 @@ const PollTaskRes = (type, resid, taskid, showdelete, targetdivid = '#pbtitle') 
                             columns: [
                               {'title': 'Index', 'formatter': 'runningFormatter'},
                               {'field': 'url', 'title': argtitle, 'sortable': true, 'formatter': 'urlFormatter'},
-                              {'field': 'problem', 'title': argcolumn2, 'sortable': true}
+                              {'field': 'problem', 'title': argcolumn2, 'sortable': true, 'formatter': columns2Formatter}
                             ]
                           });
                         }
@@ -618,6 +620,17 @@ function urlFormatter(value, row) {
   } else {
     return row.url
   }
+}
+function bytesToSize(bytes) {
+    var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    if (bytes == 0) return 'n/a';
+    var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+    if (i == 0) return bytes + ' ' + sizes[i];
+    return (bytes / Math.pow(1024, i)).toFixed(1) + ' ' + sizes[i];
+}
+
+function sizeFormatter(value, row) {
+  return bytesToSize(value)
 }
 function runningFormatter(value, row, index) {
     return 1 + index;
