@@ -1,24 +1,15 @@
 #!/bin/env python3
 # -*- coding: utf-8 -*-
 # vim: ts=4 sw=4 et
-import json
-
-import requests
-from requests.exceptions import ReadTimeout
-
 from celery import shared_task
-
 from geordash.logwrap import get_logger
-
 from flask import current_app as app
-
-from sqlalchemy import create_engine, MetaData, select, Column, String, Integer, Text, Table
+from sqlalchemy import create_engine, MetaData, select, Table
 from sqlalchemy.engine import URL
 from sqlalchemy.ext.automap import automap_base
-from sqlalchemy.exc import NoResultFound, OperationalError
+from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.ext.declarative import DeclarativeMeta
 import glob
 from pathlib import Path
 import jinja2
