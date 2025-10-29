@@ -236,6 +236,7 @@ def check_geoserver_datadir():
         )
     return {"result_id": groupresult.id}
 
+
 @tasks_bp.route("/check/geoserver/datadir/<string:colltype>/<string:itemid>.json")
 def check_geoserver_datadir_item(colltype, itemid):
     gsd = app.extensions["owscache"].get_geoserver_datadir_view()
@@ -248,6 +249,7 @@ def check_geoserver_datadir_item(colltype, itemid):
         return abort(404)
     result = geordash.checks.gsd.gsdatadir_item.delay(ctype, itemid, None)
     return {"result_id": result.id}
+
 
 @tasks_bp.route("/check/ows/<string:stype>/<string:url>/<string:lname>.json")
 def check_owslayer(stype, url, lname):
@@ -322,6 +324,7 @@ def check_cswservice(url):
             "geordash.checks.csw.check_catalog", [url], groupresult.id
         )
     return {"result_id": groupresult.id}
+
 
 @tasks_bp.route("/check/gndatadir/result.json")
 def check_gndatadir():
