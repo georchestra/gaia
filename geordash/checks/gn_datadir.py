@@ -12,7 +12,6 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 import glob
 from pathlib import Path
-import jinja2
 
 Base = declarative_base()
 
