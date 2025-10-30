@@ -9,7 +9,6 @@ from sqlalchemy.engine import URL
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
 import glob
 from pathlib import Path
 
