@@ -13,8 +13,6 @@ from sqlalchemy.ext.declarative import declarative_base
 import glob
 from pathlib import Path
 
-Base = declarative_base()
-
 
 def get_folder_size(folder):
     return sum(file.stat().st_size for file in Path(folder).rglob("*"))
