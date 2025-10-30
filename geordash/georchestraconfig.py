@@ -79,13 +79,16 @@ class GeorchestraConfig:
             str += key + ":\r\n<br>"
             for key2 in self.sections[key]:
                 str += " \t&emsp;" + key2 + " : "
-                str += (
-                    " \t&emsp;"
-                    + self.sections[key][key2]
-                    + " = "
-                    + self.get(key2, section=key)
-                    + "\r\n<br> "
-                )
+                if self.sections[key][key2] == self.get(key2, section=key):
+                    str += " \t&emsp;" + self.sections[key][key2] + "\r\n<br> "
+                else:
+                    str += (
+                        " \t&emsp;"
+                        + self.sections[key][key2]
+                        + " = "
+                        + self.get(key2, section=key)
+                        + "\r\n<br> "
+                    )
         return str
 
     def get(self, key, section="default"):
