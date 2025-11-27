@@ -517,7 +517,7 @@ const PollTaskRes = (type, resid, taskid, showdelete, targetdivid = '#pbtitle') 
                     if (Array.isArray(data["value"]) || Array.isArray(data["value"]['problems'])) {
                         var argtitle = 'Layer'
                         var argcolumn2 = 'Problem'
-                        var columns2Formatter = 'None'
+                        var columns2Formatter = 'GetPbStrFormatter'
                         if (data['task'].includes('csw')) {
                           argtitle = 'Metadata'
                         } else if (data['task'].includes('check_resources')) {
@@ -616,10 +616,13 @@ const PollTaskRes = (type, resid, taskid, showdelete, targetdivid = '#pbtitle') 
 
 function urlFormatter(value, row) {
   if (row.xurl !== undefined) {
-    return '<a class="fa" href="' + row.xurl + '">'+ row.url +'</a>'
+    return '<a class="fa" href="' + row.xurl + '">'+ row.url +'</a>';
   } else {
-    return row.url
+    return row.url;
   }
+}
+function GetPbStrFormatter(value, row) {
+    return value;
 }
 function bytesFormatter(bytes, row="") {
     var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
