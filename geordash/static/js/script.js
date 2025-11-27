@@ -517,7 +517,7 @@ const PollTaskRes = (type, resid, taskid, showdelete, targetdivid = '#pbtitle') 
                     if (Array.isArray(data["value"]) || Array.isArray(data["value"]['problems'])) {
                         var argtitle = 'Layer'
                         var argcolumn2 = 'Problem'
-                        var columns2Formatter = 'None'
+                        var columns2Formatter = undefined
                         if (data['task'].includes('csw')) {
                           argtitle = 'Metadata'
                         } else if (data['task'].includes('check_resources')) {
