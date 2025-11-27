@@ -616,12 +616,11 @@ const PollTaskRes = (type, resid, taskid, showdelete, targetdivid = '#pbtitle') 
 
 function urlFormatter(value, row) {
   if (row.xurl !== undefined) {
-    return '<a class="fa" href="' + row.xurl + '">'+ row.url +'</a>';
+    return '<a class="fa" href="' + row.xurl + '">'+ row.url +'</a>'
   } else {
-    return row.url;
+    return row.url
   }
 }
-
 function bytesFormatter(bytes, row="") {
     var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
     if (bytes == 0) return 'n/a';
