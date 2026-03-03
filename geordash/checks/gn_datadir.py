@@ -28,12 +28,7 @@ class GeonetworkDatadirChecker:
             database=conf.get("jdbc.database", "geonetwork"),
         )
 
-        engine = create_engine(
-            url,
-            connect_args={
-                "options": f"-csearch_path={conf.get('jdbc.schema', 'geonetwork')}"
-            },
-        )
+        engine = create_engine(url)
         self.sessionm = sessionmaker(bind=engine)
         self.sessiono = self.sessionm()
 
