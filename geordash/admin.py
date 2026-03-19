@@ -112,6 +112,9 @@ def geoserver_datadir_collection(colltype: str):
     if not gsd.parsed:
         return redirect(url_for('dashboard.admin.geoserver_datadir'))
 
+    if colltype not in gsd.collections:
+        return abort(404)
+
     items = gsd.collections[colltype].coll
     out = list()
     for o in items.values():
@@ -147,6 +150,9 @@ def geoserver_datadir_collobj(colltype: str, collobj: str):
     # being parsed ? redirect to root
     if not gsd.parsed:
         return redirect(url_for('dashboard.admin.geoserver_datadir'))
+
+    if colltype not in gsd.collections:
+        return abort(404)
 
     items = gsd.collections[colltype + "s"].coll
     obj = items.get(collobj)
