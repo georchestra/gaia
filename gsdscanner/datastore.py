@@ -85,8 +85,8 @@ class Datastore(dict):
                 engine = create_engine(url)
                 inspector = inspect(engine)
                 if self.schema in inspector.get_schema_names():
-                    m = MetaData(engine, schema=self.schema)
-                    m.reflect()
+                    m = MetaData(schema=self.schema)
+                    m.reflect(bind=engine)
                     # list tables in the given database, removing the schema prefix
                     self.tables = [
                         t.removeprefix(f"{self.schema}.") for t in m.tables.keys()
