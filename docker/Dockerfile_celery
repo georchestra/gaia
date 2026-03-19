@@ -1,5 +1,5 @@
 # Dockerfile
-FROM debian:bookworm
+FROM debian:trixie
 
 ENV CELERY_APP="make_celery"
 ENV CELERY_OPTS="-P solo -B -E -s workdir/celerybeat-schedule"
@@ -9,8 +9,8 @@ ENV CELERY_LOGLEVEL="INFO"
 ARG UID=10000
 ARG GID=10001
 
-RUN addgroup --gid ${GID} gaia
-RUN adduser --uid ${UID} --disabled-password --home /app --shell /bin/sh --ingroup gaia celery
+RUN groupadd --gid ${GID} gaia
+RUN useradd --uid ${UID} --home-dir /app --shell /bin/sh --groups gaia celery
 
 RUN apt update && \
     apt install -y python3-flask-bootstrap python3-flask python3-celery python3-sqlalchemy \
