@@ -151,7 +151,7 @@ def geoserver_datadir_collobj(colltype: str, collobj: str):
     if not gsd.parsed:
         return redirect(url_for('dashboard.admin.geoserver_datadir'))
 
-    if colltype not in gsd.collections:
+    if colltype + "s" not in gsd.collections:
         return abort(404)
 
     items = gsd.collections[colltype + "s"].coll
