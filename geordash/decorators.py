@@ -35,3 +35,27 @@ def check_role(role, json=False):
         return wrapper
 
     return decorator
+
+
+def non_concurrent_task(taskname):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            fqtn = taskname.__module__ + "." + taskname.__name__
+            active_tasks = app.extensions["celery"].control.inspect().active()
+            for worker, tasks in active_tasks.items():
+                for active_task in tasks:
+                    if (
+                        active_task["type"] == fqtn
+                        and list(kwargs.values()) == active_task["args"]
+                    ):
+                        app.logger.warn(
+                            f"{ fqtn }() task with args { list(kwargs.values()) } already "
+                            + "running on { worker } with id {active_task['id']}, returning it"
+                        )
+                        return {"taskid": active_task["id"]}
+            return func(*args, **kwargs)
+
+        return wrapper
+
+    return decorator
