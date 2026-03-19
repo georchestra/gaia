@@ -5,6 +5,7 @@
 from flask import Blueprint
 from flask import (
     request,
+    redirect,
     render_template,
     url_for,
     make_response,
@@ -106,6 +107,11 @@ def geoserver_datadir_collection(colltype: str):
         return make_response(
             jsonify({"error": f"no geoserver datadir was found, check logs"}, 404)
         )
+
+    # being parsed ? redirect to root
+    if not gsd.parsed:
+        return redirect(url_for('dashboard.admin.geoserver_datadir'))
+
     items = gsd.collections[colltype].coll
     out = list()
     for o in items.values():
@@ -137,6 +143,11 @@ def geoserver_datadir_collobj(colltype: str, collobj: str):
         return make_response(
             jsonify({"error": f"no geoserver datadir was found, check logs"}), 404
         )
+
+    # being parsed ? redirect to root
+    if not gsd.parsed:
+        return redirect(url_for('dashboard.admin.geoserver_datadir'))
+
     items = gsd.collections[colltype + "s"].coll
     obj = items.get(collobj)
     if obj is not None:
