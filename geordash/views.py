@@ -19,7 +19,7 @@ import geordash.checks.ows
 import geordash.checks.csw
 import geordash.checks.mviewer
 import geordash.checks.gsd
-from geordash.decorators import check_role
+from geordash.decorators import check_role, debug_only
 
 tasks_bp = Blueprint("tasks", __name__, url_prefix="/tasks")
 
@@ -84,6 +84,14 @@ def result(id: str) -> dict[str, object]:
         "value": value,
     }
 
+
+@tasks_bp.get("/inspect.json")
+@debug_only
+def inspect_active_tasks():
+    act = app.extensions["celery"].control.inspect().active()
+    if act is None:
+        act = {}
+    return act
 
 @tasks_bp.get("/lastresultbytask/<string:taskname>")
 def last_result_by_taskname_and_args(taskname: str) -> dict[str, object]:
