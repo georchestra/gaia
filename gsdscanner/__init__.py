@@ -4,7 +4,7 @@
 
 from lxml import etree
 from datetime import datetime
-from osgeo.ogr import Open
+from osgeo.ogr import Open, UseExceptions
 import os
 from geordash.utils import getelemat
 from geordash.logwrap import get_logger
@@ -22,6 +22,7 @@ from .vectordata import VectorData
 from .rasterdata import RasterData
 from .collection import Collection
 
+UseExceptions()
 
 class GSDatadirScanner:
     def __init__(
