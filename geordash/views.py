@@ -254,7 +254,9 @@ def check_geoserver_datadir_item(colltype, itemid):
     ctype = f"{colltype}s"
     if gsd is None:
         return abort(404)
-    if ctype not in gsd.available_keys:
+    if not gsd.parsed:
+        return abort(404)
+    if ctype not in gsd.available_keys or ctype not in gsd.collections:
         return abort(404)
     if gsd.collections[ctype].coll.get(itemid) is None:
         return abort(404)
