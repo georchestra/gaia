@@ -43,6 +43,10 @@ def non_concurrent_task(taskname):
         def wrapper(*args, **kwargs):
             fqtn = taskname.__module__ + "." + taskname.__name__
             active_tasks = app.extensions["celery"].control.inspect().active()
+            # if no worker is found, queue the task anyway
+            if active_tasks is None:
+                return func(*args, **kwargs)
+            # look for a task with the same name and args
             for worker, tasks in active_tasks.items():
                 for active_task in tasks:
                     if (
@@ -54,6 +58,7 @@ def non_concurrent_task(taskname):
                             + "running on { worker } with id {active_task['id']}, returning it"
                         )
                         return {"taskid": active_task["id"]}
+            # didnt find the task, execute it
             return func(*args, **kwargs)
 
         return wrapper
