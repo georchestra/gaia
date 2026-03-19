@@ -123,8 +123,8 @@ def find_geoserver_datadir(default):
         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
             pass
 
-    if os.getenv('GEOSERVER_DATA_DIR'):
-        default = os.getenv('GEOSERVER_DATA_DIR')
+    if os.getenv("GEOSERVER_DATA_DIR"):
+        default = os.getenv("GEOSERVER_DATA_DIR")
 
     if default is None:
         default = "/srv/data/geoserver"

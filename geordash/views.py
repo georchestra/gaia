@@ -93,6 +93,7 @@ def inspect_active_tasks():
         act = {}
     return act
 
+
 @tasks_bp.get("/lastresultbytask/<string:taskname>")
 def last_result_by_taskname_and_args(taskname: str) -> dict[str, object]:
     args = request.args.get("taskargs", None)

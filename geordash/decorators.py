@@ -5,9 +5,11 @@ from functools import wraps
 from flask import request, abort, jsonify
 from flask import current_app as app
 
+
 def is_superuser():
     roles = request.headers.get("sec-roles", "").split(";")
     return "ROLE_SUPERUSER" in roles
+
 
 def debug_only(f):
     @wraps(f)
@@ -17,6 +19,7 @@ def debug_only(f):
         return f(**kwargs)
 
     return wrapped
+
 
 def check_role(role, json=False):
     def decorator(func):
