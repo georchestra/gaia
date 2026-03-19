@@ -6,9 +6,8 @@ from flask import Blueprint
 from flask import request, render_template, abort, url_for
 from flask import current_app as app
 import requests
-from functools import wraps
 
-from geordash.decorators import is_superuser, check_role
+from geordash.decorators import is_superuser, check_role, debug_only
 from geordash.checks.mapstore import get_resources_using_ows, get_res
 from geordash.api import mapstore_get, gninternalid, get_res_details
 from geordash.utils import find_localmduuid, unmunge
@@ -22,16 +21,6 @@ import json
 dash_bp = Blueprint(
     "dashboard", __name__, url_prefix="/gaia", template_folder="templates/dashboard"
 )
-
-
-def debug_only(f):
-    @wraps(f)
-    def wrapped(**kwargs):
-        if not app.debug:
-            abort(404)
-        return f(**kwargs)
-
-    return wrapped
 
 
 def get_rescontent_from_resid(restype, resid):
