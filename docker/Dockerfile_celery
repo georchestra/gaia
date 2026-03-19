@@ -2,7 +2,7 @@
 FROM debian:bookworm
 
 ENV CELERY_APP="make_celery"
-ENV CELERY_OPTS="-P solo -B -E -s workdir/celerybeat-schedule"
+ENV CELERY_OPTS="-P thread -c 2 -B -E -s workdir/celerybeat-schedule"
 ENV CELERY_LOGLEVEL="INFO"
 
 # set fixed UID and GID - see github.com/hexops/dockerfile
@@ -27,4 +27,4 @@ USER celery
 COPY . /geordash
 WORKDIR /geordash
 
-CMD ["sh", "-c", "python3 -m celery -A make_celery worker --loglevel INFO -P solo -B -E -s workdir/celerybeat-schedule"]
+CMD ["sh", "-c", "python3 -m celery -A make_celery worker --loglevel INFO -P thread -c 2 -B -E -s workdir/celerybeat-schedule"]
