@@ -19,7 +19,7 @@ import geordash.checks.ows
 import geordash.checks.csw
 import geordash.checks.mviewer
 import geordash.checks.gsd
-from geordash.decorators import check_role, debug_only
+from geordash.decorators import check_role, debug_only, non_concurrent_task
 
 tasks_bp = Blueprint("tasks", __name__, url_prefix="/tasks")
 
@@ -143,12 +143,14 @@ def forgetogc(stype, url):
 
 
 @tasks_bp.get("/parsegsd.json")
+@non_concurrent_task(parse_gsdatadir)
 def start_parse_gsd():
     result = parse_gsdatadir.delay()
     return {"taskid": result.id}
 
 
 @tasks_bp.get("/fetchcswrecords/<string:portal>.json")
+@non_concurrent_task(get_records)
 def start_fetch_csw(portal: str):
     result = get_records.delay(portal)
     return {"taskid": result.id}
