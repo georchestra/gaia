@@ -514,7 +514,7 @@ const PollTaskRes = (type, resid, taskid, showdelete, targetdivid = '#pbtitle') 
                         }
                       $(targetdivid).text(data["value"].problems.length + ' problems found');
                     }
-                    if (Array.isArray(data["value"]) || Array.isArray(data["value"]['problems'])) {
+                    if (Array.isArray(data["value"]) || data['task'].includes('gn_datadir')) {
                         var argtitle = 'Layer'
                         var argcolumn2 = 'Problem'
                         var columns2Formatter = undefined
