@@ -10,7 +10,6 @@ services:
     command: redis-server
     environment:
       - REDIS_REPLICATION_MODE=master
-      -
   gaia-back:
     # if you want to switch back to official image
     #  image: "georchestra/gaia:latest"

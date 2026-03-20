@@ -1,5 +1,5 @@
 # Dockerfile
-FROM debian:bookworm
+FROM debian:trixie
 
 ENV FLASK_APP=geordash
 ENV FLASK_OPTS="-h 0.0.0.0 -p 5002"
@@ -11,8 +11,8 @@ ENV REDISURL=""
 ARG UID=10000
 ARG GID=10001
 
-RUN addgroup --gid ${GID} gaia
-RUN adduser --uid ${UID} --disabled-password --home /app --shell /bin/sh --ingroup gaia gunicorn
+RUN groupadd --gid ${GID} gaia
+RUN useradd --uid ${UID} --home-dir /app --shell /bin/sh --groups gaia gunicorn
 
 RUN apt update && \
     apt install -y python3-flask-bootstrap python3-flask python3-celery python3-sqlalchemy \
