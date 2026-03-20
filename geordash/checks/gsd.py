@@ -305,7 +305,7 @@ def check_coverage(gsd: GSDatadirScanner, item: Coverage, key: str, ret: dict):
             rdk = cs.url.replace("/", "~")
             if not gsd.collections["rasterdatas"].has(rdk):
                 ret["problems"].append(
-                    {"type": "NoSuchRasterData", "rdk": rdk, "skey": cs.key}
+                    {"type": "NoSuchRasterData", "rdk": rdk, "skey": cs.id}
                 )
         elif cs.type == "ImageMosaic":
             if os.path.isdir(cs.url):
@@ -358,7 +358,7 @@ def check_coverage(gsd: GSDatadirScanner, item: Coverage, key: str, ret: dict):
                                                 {
                                                     "type": "NoSuchRasterData",
                                                     "rdk": rdk,
-                                                    "skey": cs.key,
+                                                    "skey": cs.id,
                                                 }
                                             )
                                     else:
@@ -366,7 +366,7 @@ def check_coverage(gsd: GSDatadirScanner, item: Coverage, key: str, ret: dict):
                                             {
                                                 "type": "NoSuchFile",
                                                 "path": rpath,
-                                                "skey": cs.key,
+                                                "skey": cs.id,
                                             }
                                         )
                                 # release gdal resources
@@ -377,7 +377,7 @@ def check_coverage(gsd: GSDatadirScanner, item: Coverage, key: str, ret: dict):
                         )
                 else:
                     ret["problems"].append(
-                        {"type": "NoSuchFile", "path": idx, "skey": cs.key}
+                        {"type": "NoSuchFile", "path": idx, "skey": cs.id}
                     )
 
     if item.metadatalinks is not None:
