@@ -97,9 +97,9 @@ class GeorchestraConfig:
         value = self.sections[section].get(key, None)
         if value:
             # this is to catch ${ENV_VAR}
-            search_env = re.match("^\${(.*)}$", value)
+            search_env = re.match(r"^\${(.*)}$", value)
             # this is for url using env var http://${ENV_VAR}/geonetwork/..etc?params
-            search_env2 = re.match("(.*)\${(.*)}(.*)", value)
+            search_env2 = re.match(r"(.*)\${(.*)}(.*)", value)
             if search_env:
                 if getenv(search_env.group(1)):
                     value = getenv(search_env.group(1))

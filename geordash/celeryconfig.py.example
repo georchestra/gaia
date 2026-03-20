@@ -13,7 +13,7 @@ imports = (
     "geordash.checks.gsd",
     "geordash.checks.gn_datadir",
 )
-# worker_pool = solo
+# worker_pool = thread
 worker_log_format = (
     "[%(asctime)s: %(levelname)s/%(processName)s/%(threadName)s] WORKER %(message)s"
 )

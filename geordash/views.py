@@ -19,7 +19,7 @@ import geordash.checks.ows
 import geordash.checks.csw
 import geordash.checks.mviewer
 import geordash.checks.gsd
-from geordash.decorators import check_role
+from geordash.decorators import check_role, debug_only, non_concurrent_task
 
 tasks_bp = Blueprint("tasks", __name__, url_prefix="/tasks")
 
@@ -85,6 +85,15 @@ def result(id: str) -> dict[str, object]:
     }
 
 
+@tasks_bp.get("/inspect.json")
+@debug_only
+def inspect_active_tasks():
+    act = app.extensions["celery"].control.inspect().active()
+    if act is None:
+        act = {}
+    return act
+
+
 @tasks_bp.get("/lastresultbytask/<string:taskname>")
 def last_result_by_taskname_and_args(taskname: str) -> dict[str, object]:
     args = request.args.get("taskargs", None)
@@ -134,12 +143,14 @@ def forgetogc(stype, url):
 
 
 @tasks_bp.get("/parsegsd.json")
+@non_concurrent_task(parse_gsdatadir)
 def start_parse_gsd():
     result = parse_gsdatadir.delay()
     return {"taskid": result.id}
 
 
 @tasks_bp.get("/fetchcswrecords/<string:portal>.json")
+@non_concurrent_task(get_records)
 def start_fetch_csw(portal: str):
     result = get_records.delay(portal)
     return {"taskid": result.id}
@@ -243,7 +254,9 @@ def check_geoserver_datadir_item(colltype, itemid):
     ctype = f"{colltype}s"
     if gsd is None:
         return abort(404)
-    if ctype not in gsd.available_keys:
+    if not gsd.parsed:
+        return abort(404)
+    if ctype not in gsd.available_keys or ctype not in gsd.collections:
         return abort(404)
     if gsd.collections[ctype].coll.get(itemid) is None:
         return abort(404)

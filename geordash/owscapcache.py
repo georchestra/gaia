@@ -339,4 +339,6 @@ class OwsCapCache:
         self.rediscli.set(rkey, json_entry)
         # update local version
         self.services[rkey] = gsdd
-        get_logger("OwsCapCache").info(f"updated redis & in-memory geoserver datadir view with version {gsdd.version}")
+        get_logger("OwsCapCache").info(
+            f"updated redis & in-memory geoserver datadir view with version {gsdd.version}"
+        )

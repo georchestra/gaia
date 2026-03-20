@@ -492,6 +492,7 @@ const PollTaskRes = (type, resid, taskid, showdelete, targetdivid = '#pbtitle') 
                       }
                   }
                   if (data["value"].problems !== undefined && data["value"].problems.length > 0) {
+                    const np = data["value"].problems.length;
                     if (!data["successful"]) {
                       /*
                        * try to figure out which job actually failed
@@ -512,12 +513,12 @@ const PollTaskRes = (type, resid, taskid, showdelete, targetdivid = '#pbtitle') 
                           exporttotalgndatadir.html("<p>"+GetPbStr(totalgndatadir)+" within the path "+data["value"]["searching_path"]+"</p>" )
                           $(targetpboverviewdivid).html(exporttotalgndatadir)
                         }
-                      $(targetdivid).text(data["value"].problems.length + ' problems found');
+                      $(targetdivid).text(np + ' problem' + ( np > 1 ? 's': '' ) +' found');
                     }
-                    if (Array.isArray(data["value"]) || Array.isArray(data["value"]['problems'])) {
+                    if (Array.isArray(data["value"]) || data['task'].includes('gn_datadir')) {
                         var argtitle = 'Layer'
                         var argcolumn2 = 'Problem'
-                        var columns2Formatter = 'None'
+                        var columns2Formatter = undefined
                         if (data['task'].includes('csw')) {
                           argtitle = 'Metadata'
                         } else if (data['task'].includes('check_resources')) {
@@ -563,7 +564,11 @@ const PollTaskRes = (type, resid, taskid, showdelete, targetdivid = '#pbtitle') 
                           });
                         }
                     } else {
+                      if (np > 1) {
                         $(targetpbdivid).html(ArrayToHtmlList(data["value"].problems));
+                      } else {
+                        $(targetpbdivid).html(data["value"].problems[0]);
+                      }
                     }
                   } else {
                     if (!data["successful"]) {

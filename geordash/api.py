@@ -152,7 +152,9 @@ def geonetwork_subportals():
     cookies = r[1]
     me = r[2]
 
-    gn_site = requests.get(gnurl + "srv/api/site", headers={"Accept": "application/json"})
+    gn_site = requests.get(
+        gnurl + "srv/api/site", headers={"Accept": "application/json"}
+    )
     information_site = {}
     if gn_site.status_code == 200:
         information_site = gn_site.json()
@@ -165,16 +167,14 @@ def geonetwork_subportals():
     # default url of subportal sources
     subportalapiurl = "srv/api/sources"
     # safely get the version from json answer
-    if "4.4." in  information_site.get('system/platform/version', "Nop"):
+    if "4.4." in information_site.get("system/platform/version", "Nop"):
         # url for 4.4.8
         subportalapiurl = "srv/api/sources?type=subportal"
-    elif "4.2." in information_site.get('system/platform/version', "Nop"):
+    elif "4.2." in information_site.get("system/platform/version", "Nop"):
         # url for 4.2.8
         subportalapiurl = "srv/api/sources/subportal"
 
-    portals = requests.get(
-        gnurl + subportalapiurl, cookies=cookies, headers=headers
-    )
+    portals = requests.get(gnurl + subportalapiurl, cookies=cookies, headers=headers)
     if portals.status_code != 200:
         return portals.text
     return portals.json()

@@ -8,6 +8,7 @@ from datetime import datetime
 from geordash.logwrap import get_logger
 from geordash.owscapcache import OwsCapCache
 
+
 @shared_task(bind=True)
 def parse_gsdatadir(self):
     """
@@ -24,10 +25,7 @@ def parse_gsdatadir(self):
         i += 1
         self.update_state(
             state="PROGRESS",
-            meta={
-                "current": f"({t}) {i}",
-                "total": len(gsd.available_keys)
-            },
+            meta={"current": f"({t}) {i}", "total": len(gsd.available_keys)},
         )
         gsd.parse(t)
         ni += len(gsd.collections[t].coll)
@@ -37,6 +35,6 @@ def parse_gsdatadir(self):
     gsd.compute_crossref()
     end = datetime.now()
     get_logger("ParseGsDatadir").debug(f"computed crossrefs, parsing took {end-start}")
-    gsd.parsed=True
+    gsd.parsed = True
     app.extensions["owscache"].update_geoserver_datadir_view(gsd)
     return ni
