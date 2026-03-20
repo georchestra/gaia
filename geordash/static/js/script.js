@@ -564,7 +564,11 @@ const PollTaskRes = (type, resid, taskid, showdelete, targetdivid = '#pbtitle') 
                           });
                         }
                     } else {
+                      if (np > 1) {
                         $(targetpbdivid).html(ArrayToHtmlList(data["value"].problems));
+                      } else {
+                        $(targetpbdivid).html(data["value"].problems[0]);
+                      }
                     }
                   } else {
                     if (!data["successful"]) {
