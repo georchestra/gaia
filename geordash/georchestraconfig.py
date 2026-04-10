@@ -1,10 +1,9 @@
 #!/bin/env python3
 # -*- coding: utf-8 -*-
 # vim: ts=4 sw=4 et
-import os.path
 from configparser import ConfigParser
 from itertools import chain
-from os import getenv, getcwd
+from os import getenv, getcwd, path
 import json
 import re
 import yaml
@@ -25,7 +24,7 @@ class GeorchestraConfig:
             parser.read_file(lines)
         self.sections["mapstoregeostore"] = parser["section"]
 
-        self.read_georchestra_routes()
+        self.read_app_routes()
         self.sections["urls"] = dict()
         with open(f"{self.datadirpath}/mapstore/configs/localConfig.json") as file:
             s = file.read()
@@ -70,28 +69,28 @@ class GeorchestraConfig:
             # failed to read .git/HEAD or .git/refs/heads/* ?
             pass
 
-    def read_georchestra_routes(self) -> None:
+    def read_app_routes(self) -> None:
         parser = ConfigParser()
-        file_hosts_routes = (
+        file_app_routes = (
             f"{self.datadirpath}/security-proxy/targets-mapping.properties"
         )
-        if os.path.exists(file_hosts_routes):
-            with open(file_hosts_routes) as lines:
+        if path.exists(file_app_routes):
+            with open(file_app_routes) as lines:
                 lines = chain(("[section]",), lines)  # This line does the trick.
                 parser.read_file(lines)
-            self.sections["hosts_routes"] = parser["section"]
-            self.sections["hosts_routes"]["entrance"] = "security-proxy"
+            self.sections["app_routes"] = parser["section"]
+            self.sections["app_routes"]["entrance"] = "security-proxy"
         else:
-            file_hosts_routes = f"{self.datadirpath}/gateway/routes.yaml"
-            with open(file_hosts_routes) as lines:
-                self.sections["hosts_routes"] = dict()
+            file_app_routes = f"{self.datadirpath}/gateway/routes.yaml"
+            with open(file_app_routes) as lines:
+                self.sections["app_routes"] = dict()
                 lines2 = yaml.safe_load(lines)
                 # only get the targets lines https://github.com/georchestra/datadir/blob/docker-master/gateway/routes.yaml#L76
                 for service_target in lines2["georchestra.gateway.services"]:
-                    self.sections["hosts_routes"][service_target.split(".")[0]] = (
+                    self.sections["app_routes"][service_target.split(".")[0]] = (
                         lines2["georchestra.gateway.services"][service_target]
                     )
-            self.sections["hosts_routes"]["entrance"] = "gateway"
+            self.sections["app_routes"]["entrance"] = "gateway"
 
     def tostr(self):
         str = ""
