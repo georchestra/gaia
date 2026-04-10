@@ -19,7 +19,7 @@ def mapstore_get(request, url, accept_json=True):
         headers["sec-username"] = request.headers.get("Sec-Username")
     if "sec-roles" in request.headers:
         headers["sec-roles"] = request.headers.get("Sec-Roles")
-    msurl = app.extensions["conf"].get("mapstore", "hosts_routes")
+    msurl = app.extensions["conf"].get("mapstore", "app_routes")
     return requests.get(msurl + url, headers=headers)
 
 
@@ -62,7 +62,7 @@ def gninternalid(request, uuid):
     if "sec-roles" in request.headers:
         headers["sec-roles"] = request.headers.get("Sec-Roles")
     gnurl = app.extensions["conf"].get(
-        app.extensions["conf"].get("localgn", "urls"), "hosts_routes"
+        app.extensions["conf"].get("localgn", "urls"), "app_routes"
     )
     query = {
         "size": 1,
@@ -142,7 +142,7 @@ def geonetwork_preauth(gnurl):
 @api_bp.route("/geonetwork/subportals.json")
 def geonetwork_subportals():
     gnurl = app.extensions["conf"].get(
-        app.extensions["conf"].get("localgn", "urls"), "hosts_routes"
+        app.extensions["conf"].get("localgn", "urls"), "app_routes"
     )
     r = geonetwork_preauth(gnurl)
     if type(r) != tuple:
@@ -188,7 +188,7 @@ def metadatas():
         return abort(403)
     def_es_querysize = 60
     gnurl = app.extensions["conf"].get(
-        app.extensions["conf"].get("localgn", "urls"), "hosts_routes"
+        app.extensions["conf"].get("localgn", "urls"), "app_routes"
     )
     preauth = requests.get(gnurl + "srv/api/me", headers={"Accept": "application/json"})
     if preauth.status_code == 204:
@@ -295,7 +295,7 @@ def geoserver_workspaces():
     Reuses the credentials of the current user by passing request headers
     """
     gsurl = app.extensions["conf"].get(
-        app.extensions["conf"].get("localgs", "urls"), "hosts_routes"
+        app.extensions["conf"].get("localgs", "urls"), "app_routes"
     )
     workspaces = requests.get(gsurl + "rest/workspaces.json", headers=request.headers)
     if workspaces.status_code != 200:
