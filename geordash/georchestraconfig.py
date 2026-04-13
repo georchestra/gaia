@@ -87,9 +87,9 @@ class GeorchestraConfig:
                 lines2 = yaml.safe_load(lines)
                 # only get the targets lines https://github.com/georchestra/datadir/blob/docker-master/gateway/routes.yaml#L76
                 for service_target in lines2["georchestra.gateway.services"]:
-                    self.sections["app_routes"][service_target.split(".")[0]] = (
-                        lines2["georchestra.gateway.services"][service_target]
-                    )
+                    self.sections["app_routes"][service_target.split(".")[0]] = lines2[
+                        "georchestra.gateway.services"
+                    ][service_target]
             self.sections["app_routes"]["entrance"] = "gateway"
 
     def tostr(self):
@@ -119,7 +119,8 @@ class GeorchestraConfig:
             search_env = re.match(r"^\${(.*)}$", value)
             # this is for url using env var http://${ENV_VAR}/geonetwork/..etc?params
             search_env2 = re.match(r"(.*)\${(.*)}(.*)", value)
-            search_env3 = re.match(r"(.*)\${(.*):.*}(.*)", value)
+            # catching url in this form http://${CONSOLE_HOST:console}:8080/console/
+            search_env3 = re.match(r"(.*)\${(.*):(.*)}(.*)", value)
 
             if search_env:
                 if getenv(search_env.group(1)):
@@ -127,7 +128,13 @@ class GeorchestraConfig:
             elif search_env3:
                 env_value = getenv(search_env3.group(2))
                 if env_value:
-                    value = search_env3.group(1) + env_value + search_env3.group(3)
+                    value = search_env3.group(1) + env_value + search_env3.group(4)
+                else:
+                    value = (
+                        search_env3.group(1)
+                        + search_env3.group(3)
+                        + search_env3.group(4)
+                    )
             elif search_env2:
                 if getenv(search_env2.group(2)):
                     value = (
