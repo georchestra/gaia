@@ -28,3 +28,12 @@ COPY . /geordash
 WORKDIR /geordash
 
 CMD ["sh", "-c", "python3 -m celery -A make_celery worker --loglevel INFO -P threads -c 2 -B -E -s workdir/celerybeat-schedule"]
+
+# OCI image labels (https://github.com/opencontainers/image-spec/blob/main/annotations.md)
+LABEL org.opencontainers.image.title="gaia-celery"
+LABEL org.opencontainers.image.description="geOrchestra dashboard (Celery worker)"
+LABEL org.opencontainers.image.source="https://github.com/georchestra/gaia"
+LABEL org.opencontainers.image.url="https://github.com/georchestra/gaia"
+LABEL org.opencontainers.image.documentation="https://docs.georchestra.org/"
+LABEL org.opencontainers.image.vendor="geOrchestra"
+LABEL org.opencontainers.image.licenses="BSD-2-Clause"
