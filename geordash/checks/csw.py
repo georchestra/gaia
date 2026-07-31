@@ -118,6 +118,7 @@ def check_record(url, uuid):
                     and ":" not in lname
                     and service.s.updateSequence
                     and service.s.updateSequence.isdigit()
+                    and int(service.s.updateSequence) > 0
                 ):
                     ws = url.split("/")[-2]
                     lname = f"{ws}:{lname}"
